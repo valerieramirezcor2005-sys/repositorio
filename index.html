@@ -1,373 +1,386 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard Audiencias - Juan Valdez</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body{margin:0;font-family:'Segoe UI',sans-serif;background:#f5efe7;color:#333;}
-header{background:#9e1b2f;color:white;padding:18px;font-size:22px;font-weight:bold;}
-.hero{height:150px;background:url("https://images.unsplash.com/photo-1447933601403-0c6688de566e");background-size:cover;display:flex;align-items:center;justify-content:center;color:white;font-size:28px;font-weight:bold;}
-.container{display:flex;height:100vh;}
-.sidebar{width:220px;background:#4b2e2b;color:white;padding:20px;}
-.sidebar button{width:100%;padding:12px;margin-bottom:10px;border:none;background:#9e1b2f;color:white;border-radius:6px;cursor:pointer;}
-.sidebar button:hover{background:#c6374a;}
-.content{flex:1;padding:25px;overflow:auto;}
-.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:25px;}
-.card{background:white;padding:20px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.08);}
-.big{font-size:28px;color:#9e1b2f;font-weight:bold;}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-.slider{width:100%;}
-.funnel{display:flex;flex-direction:column;gap:6px;margin-top:20px;}
-.stage{background:#9e1b2f;color:white;padding:12px;border-radius:6px;cursor:pointer;}
-.stage:hover{background:#c6374a;}
-.alert{color:red;font-weight:bold;}
-</style>
-</head>
-
-<body>
-
-<header> Análisis de Audiencias — Juan Valdez </header>
-<div class="hero"> ANÁLISIS DE AUDIENCIAS — JUAN VALDEZ </div>
-
-<div class="container">
-
-<div class="sidebar">
-<button onclick="show('home')">Inicio</button>
-<button onclick="show('insights')">Insights Audiencia</button>
-<button onclick="show('audiencias')">Catálogo Audiencias</button>
-<button onclick="show('funnel')">Conversion Funnel</button>
-<button onclick="show('portafolio')">Portafolio Publicitario</button>
-</div>
-
-<div class="content">
-
-<!-- INICIO -->
-<div id="home">
-<div class="kpi">
-<div class="card"><div class="big">150</div>Usuarios totales</div>
-<div class="card"><div class="big">36</div>Usuarios activos</div>
-<div class="card"><div class="big">5.6</div>Índice de enganche</div>
-<div class="card"><div class="big">6</div>Umbral alerta</div>
-</div>
-<div class="card"><h3>Comportamiento general de la audiencia</h3><canvas id="overviewChart"></canvas></div>
-</div>
-
-<!-- INSIGHTS -->
-<div id="insights" style="display:none">
-<div class="grid">
-<div class="card"><h3>Territorio</h3><canvas id="territory"></canvas></div>
-<div class="card"><h3>Consumo de café diario</h3><canvas id="cups"></canvas></div>
-<div class="card"><h3>Frecuencia en Juan Valdez</h3><canvas id="frequency"></canvas></div>
-<div class="card"><h3>Motivos de visita</h3><canvas id="motives"></canvas></div>
-<div class="card"><h3>Productos más comprados</h3><canvas id="products"></canvas></div>
-</div>
-</div>
-
-<!-- AUDIENCIAS -->
-<div id="audiencias" style="display:none">
-<div class="grid">
-
-<div class="card">
-<h3>Variables de Engagement</h3>
-<label>UX</label>
-<input type="range" min="1" max="10" value="6" id="ux" class="slider">
-<label>Frecuencia</label>
-<input type="range" min="1" max="10" value="5" id="freq" class="slider">
-<label>Tiempo</label>
-<input type="range" min="1" max="10" value="6" id="time" class="slider">
-<p><b>Índice actual:</b> <span id="indice">5.6</span></p>
-</div>
-
-<div class="card">
-<h3>Comportamiento de la Audiencia</h3>
-<canvas id="behaviorChart"></canvas>
-<p class="alert">⚠ Línea roja = alerta cuando engagement baja de 6</p>
-</div>
-
-</div>
-</div>
-
-<!-- FUNNEL -->
-<div id="funnel" style="display:none">
-<div class="card">
-<h3>Conversion Funnel</h3>
-<div class="funnel">
-<div class="stage">1. Población — 10M</div>
-<div class="stage">2. Potential Market — 3M</div>
-<div class="stage">3. Awareness — 2M</div>
-<div class="stage">4. Interest — 900K</div>
-<div class="stage">5. Intention — 400K</div>
-<div class="stage">6. Behavior — 200K</div>
-<div class="stage">7. Engagement — 100K</div>
-<div class="stage">8. Loyalty — 60K</div>
-<div class="stage">9. Advocacy — 30K</div>
-</div>
-</div>
-</div>
-
-<!-- PORTAFOLIO -->
-<div id="portafolio" style="display:none">
-
-<div class="kpi">
-<div class="card"><div class="big">$200M</div>Presupuesto Total</div>
-<div class="card"><div class="big" id="roi">18%</div>ROI Estimado</div>
-<div class="card"><div class="big" id="engagementTotal">7.4</div>Engagement Proyectado</div>
-<div class="card"><div class="big" id="riesgoTotal">Medio</div>Riesgo Promedio</div>
-</div>
-
-<div class="grid">
-
-<div class="card">
-<h3>Actores del Ecosistema</h3>
-<p><b>Anunciante:</b> Juan Valdez</p>
-<p><b>Publisher:</b> Spotify Ads</p>
-<p><b>Intermediarios:</b> Google Ads / Meta Ads / DV360</p>
-<p><b>Audiencia:</b> Segmentos definidos previamente</p>
-</div>
-
-<div class="card">
-<h3>Asignación de Inversión (Optimización)</h3>
-
-<label>Bogotá</label>
-<input type="range" min="0" max="100" value="40" id="invBogota" class="slider">
-
-<label>Medellín</label>
-<input type="range" min="0" max="100" value="30" id="invMedellin" class="slider">
-
-<label>Cali</label>
-<input type="range" min="0" max="100" value="30" id="invCali" class="slider">
-
-<p><b>Total asignado:</b> <span id="totalInv">100</span>%</p>
-
-</div>
-
-</div>
-
-<div class="card">
-<h3>Portafolio de Audiencias</h3>
-
-<table style="width:100%;border-collapse:collapse;text-align:center">
-<tr style="background:#9e1b2f;color:white">
-<th>Ciudad</th>
-<th>Inversión %</th>
-<th>Engagement</th>
-<th>Riesgo</th>
-</tr>
-
-<tr>
-<td>Bogotá</td>
-<td id="b_inv">40%</td>
-<td>8.2</td>
-<td>Medio</td>
-</tr>
-
-<tr>
-<td>Medellín</td>
-<td id="m_inv">30%</td>
-<td>7.5</td>
-<td>Bajo</td>
-</tr>
-
-<tr>
-<td>Cali</td>
-<td id="c_inv">30%</td>
-<td>6.8</td>
-<td>Alto</td>
-</tr>
-
-</table>
-
-<p style="margin-top:15px"><b>Canal líder:</b> <span id="canal">Bogotá</span></p>
-
-</div>
-
-<!-- NUEVA GRÁFICA -->
-<div class="card">
-<h3>Riesgo vs Retorno (Optimización de Portafolio)</h3>
-<canvas id="portfolioChart"></canvas>
-</div>
-
-</div>
-
-</div>
-</div>
-
-<script>
-
-function show(id){
-document.querySelectorAll(".content > div").forEach(s=>s.style.display="none")
-document.getElementById(id).style.display="block"
-}
-
-// HOME
-new Chart(document.getElementById("overviewChart"),{
-type:"line",
-data:{labels:["S1","S2","S3","S4","S5","S6"],
-datasets:[{data:[7,7.2,6.8,6.4,6,5.6],borderColor:"#9e1b2f"}]}
-})
-
-// INSIGHTS
-new Chart(document.getElementById("territory"),{
-type:"bar",
-data:{labels:["Bogotá","Medellín","Cali","Barranquilla","Otros"],
-datasets:[{data:[50,35,25,20,20],backgroundColor:"#9e1b2f"}]}
-})
-
-new Chart(document.getElementById("cups"),{
-type:"doughnut",
-data:{labels:["1","2","3","4+"],datasets:[{data:[40,60,30,20]}]}
-})
-
-new Chart(document.getElementById("frequency"),{
-type:"bar",
-data:{labels:["1-2","3-5","6-8","9+"],
-datasets:[{data:[70,40,25,15],backgroundColor:"#9e1b2f"}]}
-})
-
-new Chart(document.getElementById("motives"),{
-type:"pie",
-data:{labels:["Calidad","Ambiente","Trabajo","Productos","Marca"],
-datasets:[{data:[40,30,25,30,25]}]}
-})
-
-new Chart(document.getElementById("products"),{
-type:"bar",
-data:{labels:["Cumbre","Nevado","Latte","Cappuccino","Cold Brew","Pastelería"],
-datasets:[{data:[40,35,50,45,30,25],backgroundColor:"#9e1b2f"}]}
-})
-
-// AUDIENCIAS
-const semanas=["Semana1","Semana2","Semana3","Semana4","Semana5","Semana6"]
-let uxData=[6,6.5,7,6.8,7.2,7]
-let freqData=[5,5.2,5.5,5.8,6,6.2]
-let timeData=[6,6.3,6.5,6.7,7,7.1]
-
-const behaviorChart=new Chart(document.getElementById("behaviorChart"),{
-type:"line",
-data:{
-labels:semanas,
-datasets:[
-{label:"UX",data:uxData,borderColor:"#9e1b2f"},
-{label:"Frecuencia",data:freqData,borderColor:"#c6374a"},
-{label:"Tiempo",data:timeData,borderColor:"#6d4c41"},
-{label:"Alerta",data:[6,6,6,6,6,6],borderColor:"red",borderDash:[5,5]}
-]},
-options:{scales:{y:{min:1,max:10}}}
-})
-
-function actualizarIndice(){
-let uxVal=Number(ux.value)
-let freqVal=Number(freq.value)
-let timeVal=Number(time.value)
-
-indice.innerText=((uxVal+freqVal+timeVal)/3).toFixed(1)
-
-uxData[5]=uxVal
-freqData[5]=freqVal
-timeData[5]=timeVal
-
-behaviorChart.update()
-}
-
-document.querySelectorAll("input").forEach(e=>e.addEventListener("input",actualizarIndice))
-
-// PORTAFOLIO KPIs
-function actualizarPortafolio(){
-
-let b = Number(invBogota.value)
-let m = Number(invMedellin.value)
-let c = Number(invCali.value)
-
-let total = b + m + c
-
-totalInv.innerText = total
-
-b_inv.innerText = b + "%"
-m_inv.innerText = m + "%"
-c_inv.innerText = c + "%"
-
-let eng = ((b*8.2)+(m*7.5)+(c*6.8))/total
-engagementTotal.innerText = eng.toFixed(1)
-
-let riesgoScore = ((b*2)+(m*1)+(c*3))/total
-
-let riesgoTxt = "Medio"
-if(riesgoScore < 1.8) riesgoTxt = "Bajo"
-else if(riesgoScore > 2.3) riesgoTxt = "Alto"
-
-riesgoTotal.innerText = riesgoTxt
-
-let roiCalc = (eng * 2.2) - riesgoScore
-roi.innerText = roiCalc.toFixed(1) + "%"
-
-let max = Math.max(b,m,c)
-if(max === b) canal.innerText = "Bogotá"
-else if(max === m) canal.innerText = "Medellín"
-else canal.innerText = "Cali"
-
-actualizarGraficaPortafolio(b,m,c)
-}
-
-document.querySelectorAll("#portafolio input").forEach(e=>{
-e.addEventListener("input", actualizarPortafolio)
-})
-
-// GRÁFICA PORTAFOLIO
-let portfolioChart = new Chart(document.getElementById("portfolioChart"), {
-type: "scatter",
-data: {
-datasets: [
-{
-label: "Audiencias",
-data: [
-{x:2, y:18},
-{x:1, y:15},
-{x:3, y:12}
-],
-backgroundColor: "#9e1b2f"
-},
-{
-label: "Frontera Eficiente",
-type: "line",
-data: [
-{x:1, y:15},
-{x:2, y:18},
-{x:3, y:20}
-],
-borderColor: "#c6374a",
-fill: false,
-tension: 0.4
-}
-]
-},
-options: {
-scales: {
-x: {title:{display:true,text:"Riesgo"},min:0,max:4},
-y: {title:{display:true,text:"Retorno (%)"},min:0,max:25}
-}
-}
-})
-
-function actualizarGraficaPortafolio(b,m,c){
-let total = b + m + c
-
-let riesgoTotalCalc = ((b*2)+(m*1)+(c*3))/total
-let retornoTotalCalc = ((b*18)+(m*15)+(c*12))/total
-
-portfolioChart.data.datasets[1].data = [
-{x:1, y:15},
-{x:riesgoTotalCalc, y:retornoTotalCalc},
-{x:3, y:20}
-]
-
-portfolioChart.update()
-}
-
-</script>
-
-</body>
+<!DOCTYPE html> 
+<html lang="es"> 
+<head> 
+<meta charset="UTF-8"> 
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+<title>Dashboard Audiencias - Juan Valdez</title> 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"> 
+<style> 
+    :root { 
+        --jv-red: #9e1b2f; 
+        --jv-light-red: #c6374a; 
+        --jv-coffee: #4b2e2b; 
+        --bg-color: #f4f7f6; 
+        --text-main: #333333; 
+        --text-muted: #6b7280; 
+        --border-color: #eaedf1; 
+    } 
+    * { box-sizing: border-box; } 
+    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; } 
+    
+    /* Navegación */ 
+    .sidebar { width: 240px; background: #ffffff; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 15px; } 
+    .brand { font-size: 18px; font-weight: 700; color: var(--jv-coffee); display: flex; align-items: center; gap: 10px; margin-bottom: 30px; padding-left: 10px; } 
+    .brand span { color: var(--jv-red); } 
+    .nav-btn { width: 100%; padding: 12px 15px; margin-bottom: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 14px; font-weight: 500; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.2s; } 
+    .nav-btn:hover { background: #fff0f2; color: var(--jv-red); } 
+    .nav-btn.active { background: var(--jv-red); color: white; } 
+    
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; } 
+    header { background: #ffffff; border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; } 
+    .header-title { font-size: 20px; font-weight: 600; color: var(--jv-coffee); } 
+    .content { flex: 1; padding: 30px; overflow-y: auto; } 
+    
+    /* Tarjetas y Grid */ 
+    .kpi-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; } 
+    .card { background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; margin-bottom: 20px; } 
+    .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--jv-red); border-radius: 12px 12px 0 0; } 
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; } 
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+     
+    .kpi-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; } 
+    .kpi-value { font-size: 28px; font-weight: 800; color: var(--jv-red); } 
+    
+    /* Sliders e Inputs */ 
+    .slider-group { margin-bottom: 20px; } 
+    .slider-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; } 
+    .slider { width: 100%; accent-color: var(--jv-red); cursor: pointer; } 
+    select.insight-filter { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-family: inherit; color: var(--jv-coffee); font-weight: 600; }
+
+    /* Tablas */ 
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; } 
+    th { color: var(--text-muted); padding: 12px; border-bottom: 1px solid var(--border-color); text-transform: uppercase; font-size: 12px; } 
+    td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; } 
+    
+    /* Tracker bars de la sección Tablero */
+    .tracker-bar { width: 80px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; display: inline-block; }
+    .tracker-fill { height: 100%; border-radius: 4px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 5px; }
+    .dot-orange { background: #f59e0b; }
+    .dot-yellow { background: #fbbf24; }
+    .dot-red { background: #ef4444; }
+
+    .alert-box { background: #fff0f2; color: var(--jv-red); padding: 12px; border-radius: 8px; font-size: 12px; margin-top: 15px; border: 1px solid #fecaca; } 
+</style> 
+</head> 
+<body> 
+
+<div class="sidebar"> 
+    <div class="brand">☕ Juan<span>Valdez</span></div> 
+    <button class="nav-btn active" onclick="show('home', this)">Inicio</button> 
+    <button class="nav-btn" onclick="show('insights', this)">Insights Audiencia</button> 
+    <button class="nav-btn" onclick="show('audiencias', this)">Catálogo Audiencias</button> 
+    <button class="nav-btn" onclick="show('funnel', this)">Conversion Funnel</button> 
+    <button class="nav-btn" onclick="show('portafolio', this)">Portafolio Publicitario</button> 
+    <button class="nav-btn" onclick="show('tablero', this)">Tablero de Control</button>
+</div> 
+
+<div class="main-wrapper"> 
+    <header> 
+        <div class="header-title">Master Metrics - Análisis de Audiencias</div> 
+        <div class="header-controls">📅 Abril 2026 | <span style="background:var(--jv-red); color:white; padding:4px 10px; border-radius:15px; font-size:12px;">JV</span></div> 
+    </header> 
+    
+    <div class="content"> 
+        <div id="home"> 
+            <div class="kpi-container"> 
+                <div class="card"><div class="kpi-title">Usuarios Totales</div><div class="kpi-value">152,430</div><small style="color:green">▲ 12.5%</small></div> 
+                <div class="card"><div class="kpi-title">Avg. LTV</div><div class="kpi-value">$45.20</div><small style="color:green">▲ 4.2%</small></div> 
+                <div class="card"><div class="kpi-title">CAC Adquisición</div><div class="kpi-value">$8.15</div><small style="color:red">▼ 2.1%</small></div> 
+                <div class="card"><div class="kpi-title">Global ROAS</div><div class="kpi-value">4.2x</div><small style="color:green">Target: 4.0x</small></div> 
+            </div> 
+            <div class="card"> 
+                <h3>Audience Engagement Trend (Weekly)</h3> 
+                <div style="height: 300px;"><canvas id="homeChart"></canvas></div> 
+            </div> 
+        </div> 
+
+        <div id="insights" style="display:none"> 
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin:0; color:var(--jv-coffee);">Perfil Psicográfico y de Consumo</h2>
+                <div>
+                    <span style="font-size: 13px; font-weight: 600; margin-right: 10px;">Segmento:</span>
+                    <select class="insight-filter" id="segmentSelect" onchange="updateInsightData()">
+                        <option value="all">Todos los Segmentos</option>
+                        <option value="genz">Generación Z (18-25)</option>
+                        <option value="traditional">Tradicionales (40+)</option>
+                        <option value="premium">Premium / Coffee Lovers</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid-3">
+                <div class="card"><div class="kpi-title">Ticket Promedio</div><div class="kpi-value" id="insightTicket">$18.400</div><small>Gasto por visita</small></div>
+                <div class="card"><div class="kpi-title">Producto Estrella</div><div class="kpi-value" id="insightProduct" style="font-size: 20px; padding-top: 10px;">Tinto Campesino</div><small>Basado en volumen</small></div>
+                <div class="card"><div class="kpi-title">Churn Rate</div><div class="kpi-value" id="insightChurn">3.2%</div><small style="color:green">▼ 0.5% este mes</small></div>
+            </div>
+            <div class="grid-2"> 
+                <div class="card"><h3>Atributos de Valor (Psicografía)</h3><div style="height: 300px;"><canvas id="radarChart"></canvas></div></div> 
+                <div class="card"><h3>Preferencia por Canal de Compra</h3><div style="height: 300px;"><canvas id="channelsChart"></canvas></div></div> 
+            </div> 
+            <div class="grid-2">
+                <div class="card"><h3>Distribución Geográfica</h3><div style="height: 250px;"><canvas id="territoryChart"></canvas></div></div>
+                <div class="card"><h3>Intensidad de Consumo (Horas Pico)</h3><div style="height: 250px;"><canvas id="heatChart"></canvas></div></div>
+            </div>
+        </div> 
+
+        <div id="tablero" style="display:none">
+            <div class="card">
+                <h3 style="text-transform: uppercase; letter-spacing: 1px;">Tablero de Control Interno Multi-Cliente</h3>
+                <table>
+                    <thead><tr><th>Platform</th><th>Tracker</th><th>Budget</th><th>Spend to Date</th><th>Expected Spend</th><th>Remaining Daily Spent</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Meta Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 85%; background: blue;"></div></div></td><td>$10.00M</td><td>$18.96M <span class="status-dot dot-orange"></span></td><td>$870.75</td><td>$870.75</td></tr>
+                        <tr><td><strong>Google Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 45%; background: green;"></div></div></td><td>$2.000.000</td><td>$5.94M <span class="status-dot dot-yellow"></span></td><td>$540.10</td><td>$540.10</td></tr>
+                        <tr><td><strong>Tik Tok Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 70%; background: cyan;"></div></div></td><td>$54.000</td><td>$22.1M <span class="status-dot dot-red"></span></td><td>$1,240.05</td><td>$1,240.05</td></tr>
+                        <tr><td><strong>LinkedIn Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 35%; background: limegreen;"></div></div></td><td>$40,000</td><td>$40,000 <span class="status-dot dot-red"></span></td><td>$954.24</td><td>$954.24</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="audiencias" style="display:none"> 
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin:0; color:var(--jv-coffee);">Simulador de Configuración Meta</h2>
+                <select class="insight-filter" id="targetAudience" onchange="updateEngagement()">
+                    <option value="lovers">Coffee Lovers (Premium)</option>
+                    <option value="digital">Nómadas Digitales</option>
+                    <option value="office">Oficinistas (After-office)</option>
+                </select>
+            </div>
+            <div class="grid-2"> 
+                <div class="card"> 
+                    <h3>Variables de Engagement</h3> 
+                    <div class="slider-group">
+                        <label>User Experience (UX) <span id="valUx" style="float:right; color:var(--jv-red)">6</span></label>
+                        <input type="range" min="1" max="10" value="6" id="ux" class="slider" oninput="updateEngagement()">
+                    </div> 
+                    <div class="slider-group">
+                        <label>Frecuencia de Compra <span id="valFreq" style="float:right; color:var(--jv-red)">5</span></label>
+                        <input type="range" min="1" max="10" value="5" id="freq" class="slider" oninput="updateEngagement()">
+                    </div> 
+                    <div class="slider-group">
+                        <label>Relevancia de Contenido <span id="valTime" style="float:right; color:var(--jv-red)">6</span></label>
+                        <input type="range" min="1" max="10" value="6" id="time" class="slider" oninput="updateEngagement()">
+                    </div> 
+                    <div style="display:flex; justify-content: space-around; text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+                        <div><div class="kpi-title">Alcance Est.</div><div class="kpi-value" id="reachVal" style="font-size:18px">450k</div></div>
+                        <div><div class="kpi-title">Score Final</div><div id="indiceVal" style="color:var(--jv-red); font-size:24px; font-weight:800;">5.6</div></div>
+                    </div>
+                </div> 
+                <div class="card"> 
+                    <h3>Comportamiento Histórico Dinámico</h3> 
+                    <div style="height: 250px;"><canvas id="historyChart"></canvas></div> 
+                    <div class="alert-box" id="engagementAlert">⚠️ Línea punteada = Promedio histórico del segmento seleccionado.</div> 
+                </div> 
+            </div> 
+        </div> 
+
+        <div id="funnel" style="display:none"> 
+            <div class="grid-2"> 
+                <div class="card"><h3>Oportunidad de Acción (Gap Analysis)</h3><div style="height: 350px;"><canvas id="funnelChart"></canvas></div></div> 
+                <div class="card"> 
+                    <h3>Análisis de Fuga de Usuarios</h3> 
+                    <table> 
+                        <tr><th>Etapa</th><th>Conversión</th><th>Acción Recom.</th></tr> 
+                        <tr><td>Interest → Intention</td><td style="color:red; font-weight:bold;">18%</td><td>Retargeting agresivo</td></tr> 
+                        <tr><td>Intention → Behavior</td><td style="color:orange; font-weight:bold;">45%</td><td>Optimizar Checkout</td></tr> 
+                        <tr><td>Loyalty → Advocacy</td><td style="color:green; font-weight:bold;">60%</td><td>Programa Referidos</td></tr> 
+                    </table> 
+                </div> 
+            </div> 
+        </div> 
+
+        <div id="portafolio" style="display:none"> 
+            <div class="kpi-container"> 
+                <div class="card"><div class="kpi-title">Presupuesto Total</div><div class="kpi-value">$200M</div></div> 
+                <div class="card"><div class="kpi-title">ROI Estimado</div><div class="kpi-value" id="roiVal">18%</div></div> 
+                <div class="card"><div class="kpi-title">Engagement Proyectado</div><div class="kpi-value" id="engProj">7.4</div></div> 
+                <div class="card"><div class="kpi-title">Riesgo Promedio</div><div class="kpi-value" id="riskVal" style="color:var(--jv-coffee)">Medio</div></div> 
+            </div> 
+            <div class="grid-2"> 
+                <div class="card"> 
+                    <h3>Asignación de Inversión</h3> 
+                    <div class="slider-group"><label>Bogotá (%)</label><input type="range" id="invB" class="slider" value="40" oninput="updatePortfolio()"></div> 
+                    <div class="slider-group"><label>Medellín (%)</label><input type="range" id="invM" class="slider" value="30" oninput="updatePortfolio()"></div> 
+                    <div class="slider-group"><label>Cali (%)</label><input type="range" id="invC" class="slider" value="30" oninput="updatePortfolio()"></div> 
+                    <p>Total asignado: <span id="totalInv" style="font-weight:700">100%</span></p> 
+                </div> 
+                <div class="card"> 
+                    <h3>Portafolio de Audiencias Activo</h3> 
+                    <table> 
+                        <thead><tr><th>Ciudad</th><th>Inversión %</th><th>Engagement</th><th>Riesgo</th></tr></thead> 
+                        <tbody> 
+                            <tr><td><span style="color:red">●</span> Bogotá</td><td id="tB">40%</td><td id="eB">8.2</td><td id="rB">Medio</td></tr> 
+                            <tr><td><span style="color:orange">●</span> Medellín</td><td id="tM">30%</td><td id="eM">7.5</td><td id="rM">Bajo</td></tr> 
+                            <tr><td><span style="color:brown">●</span> Cali</td><td id="tC">30%</td><td id="eC">6.8</td><td id="rC">Alto</td></tr> 
+                        </tbody> 
+                    </table> 
+                </div> 
+            </div> 
+        </div> 
+
+    </div> 
+</div> 
+
+<script> 
+    let historyChart; // Variable global para audiencias
+
+    // --- NAVEGACIÓN ---
+    function show(id, btn) { 
+        document.querySelectorAll(".content > div").forEach(d => d.style.display = "none"); 
+        document.getElementById(id).style.display = "block"; 
+        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); 
+        btn.classList.add("active"); 
+    } 
+
+    // --- GRÁFICA HOME --- 
+    new Chart(document.getElementById("homeChart"), { 
+        type: 'line', 
+        data: { 
+            labels: ["W1", "W2", "W3", "W4", "W5"], 
+            datasets: [{ label: 'Engagement', data: [65, 72, 68, 85, 91], borderColor: '#9e1b2f', tension: 0.4, fill: true, backgroundColor: 'rgba(158, 27, 47, 0.05)' }] 
+        }, 
+        options: { maintainAspectRatio: false } 
+    }); 
+
+    // --- SECCIÓN INSIGHTS ---
+    const insightData = {
+        all: { ticket: "$18.400", product: "Tinto Campesino", churn: "3.2%", radar: [80, 70, 60, 90, 75], channels: [40, 35, 25] },
+        genz: { ticket: "$24.500", product: "Nevado Oreo", churn: "5.1%", radar: [60, 95, 85, 40, 90], channels: [70, 20, 10] },
+        traditional: { ticket: "$12.200", product: "Café Filtrado", churn: "1.8%", radar: [95, 40, 30, 95, 40], channels: [10, 80, 10] },
+        premium: { ticket: "$42.000", product: "V60 Origen Geisha", churn: "2.5%", radar: [90, 80, 95, 70, 85], channels: [30, 50, 20] }
+    };
+
+    let radarChart = new Chart(document.getElementById("radarChart"), {
+        type: 'radar',
+        data: {
+            labels: ['Lealtad', 'Innovación', 'Sostenibilidad', 'Tradición', 'Digital'],
+            datasets: [{ label: 'Perfil', data: insightData.all.radar, backgroundColor: 'rgba(158, 27, 47, 0.2)', borderColor: '#9e1b2f', pointBackgroundColor: '#9e1b2f' }]
+        },
+        options: { maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 100 } } }
+    });
+
+    let channelsChart = new Chart(document.getElementById("channelsChart"), {
+        type: 'bar',
+        data: {
+            labels: ['App / Delivery', 'Tienda Física', 'Retail / Supermercado'],
+            datasets: [{ label: 'Uso de Canal %', data: insightData.all.channels, backgroundColor: ['#9e1b2f', '#4b2e2b', '#c6374a'] }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    new Chart(document.getElementById("territoryChart"), {
+        type: 'pie',
+        data: { labels: ['Bogotá', 'Medellín', 'Cali', 'Internacional'], datasets: [{ data: [45, 25, 15, 15], backgroundColor: ['#9e1b2f', '#c6374a', '#4b2e2b', '#6b7280'] }] },
+        options: { maintainAspectRatio: false }
+    });
+
+    new Chart(document.getElementById("heatChart"), {
+        type: 'line',
+        data: {
+            labels: ['6am', '9am', '12pm', '3pm', '6pm', '9pm'],
+            datasets: [{ label: 'Tráfico de Usuarios', data: [80, 100, 40, 90, 70, 30], borderColor: '#9e1b2f', backgroundColor: 'rgba(158, 27, 47, 0.1)', fill: true, tension: 0.4 }]
+        },
+        options: { maintainAspectRatio: false }
+    });
+
+    function updateInsightData() {
+        const val = document.getElementById('segmentSelect').value;
+        const data = insightData[val];
+        document.getElementById('insightTicket').innerText = data.ticket;
+        document.getElementById('insightProduct').innerText = data.product;
+        document.getElementById('insightChurn').innerText = data.churn;
+        radarChart.data.datasets[0].data = data.radar;
+        radarChart.update();
+        channelsChart.data.datasets[0].data = data.channels;
+        channelsChart.update();
+    }
+
+    // --- INICIALIZACIÓN GRÁFICA AUDIENCIAS --- 
+    window.addEventListener('load', () => {
+        historyChart = new Chart(document.getElementById("historyChart"), { 
+            type: 'line', 
+            data: { 
+                labels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Hoy"], 
+                datasets: [
+                    { label: 'Score Actual', data: [6, 6.2, 6.5, 6.8, 5.6], borderColor: '#9e1b2f', backgroundColor: 'rgba(158, 27, 47, 0.1)', fill: true }, 
+                    { label: 'Avg Histórico', data: [6.2, 6.2, 6.2, 6.2, 6.2], borderColor: '#6b7280', borderDash: [5,5], fill: false }
+                ] 
+            }, 
+            options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 10 } } } 
+        });
+        updatePortfolio(); // Para inicializar portafolio
+    });
+
+    function updateEngagement() { 
+        let ux = parseInt(document.getElementById('ux').value); 
+        let fr = parseInt(document.getElementById('freq').value); 
+        let ti = parseInt(document.getElementById('time').value); 
+        let target = document.getElementById('targetAudience').value;
+
+        document.getElementById('valUx').innerText = ux;
+        document.getElementById('valFreq').innerText = fr;
+        document.getElementById('valTime').innerText = ti;
+
+        let score = ((ux + fr + ti) / 3).toFixed(1); 
+        document.getElementById('indiceVal').innerText = score; 
+
+        let reachMap = { lovers: 450000, digital: 820000, office: 310000 };
+        let finalReach = (reachMap[target] * (score / 6.5)).toFixed(0);
+        document.getElementById('reachVal').innerText = (finalReach / 1000).toFixed(0) + "k";
+
+        historyChart.data.datasets[0].data[4] = parseFloat(score);
+        historyChart.update();
+
+        let alertBox = document.getElementById('engagementAlert');
+        if(score < 6) {
+            alertBox.innerHTML = "⚠️ <strong>Alerta de Analista:</strong> Score por debajo del umbral. Riesgo de fatiga.";
+            alertBox.style.background = "#fee2e2"; alertBox.style.color = "#9e1b2f";
+        } else {
+            alertBox.innerHTML = "✅ <strong>Optimización Exitosa:</strong> La audiencia muestra alta receptividad.";
+            alertBox.style.background = "#dcfce7"; alertBox.style.color = "#166534";
+        }
+    } 
+
+    // --- GRÁFICA FUNNEL --- 
+    new Chart(document.getElementById("funnelChart"), { 
+        type: 'bar', 
+        data: { labels: ["Potential", "Awareness", "Interest", "Intention", "Loyalty"], datasets: [{ label: 'Usuarios (M)', data: [10, 3, 0.9, 0.4, 0.1], backgroundColor: '#9e1b2f' }] }, 
+        options: { indexAxis: 'y', maintainAspectRatio: false } 
+    }); 
+
+    // --- LÓGICA DE PORTAFOLIO ---
+    function updatePortfolio() { 
+        let b = parseInt(document.getElementById('invB').value); 
+        let m = parseInt(document.getElementById('invM').value); 
+        let c = parseInt(document.getElementById('invC').value); 
+        let total = b + m + c;
+        
+        document.getElementById('totalInv').innerText = total + "%"; 
+        document.getElementById('tB').innerText = b + "%"; 
+        document.getElementById('tM').innerText = m + "%"; 
+        document.getElementById('tC').innerText = c + "%"; 
+
+        let calcROI = ((b * 0.22) + (m * 0.18) + (c * 0.12)) / (total / 100 || 1);
+        document.getElementById('roiVal').innerText = calcROI.toFixed(1) + "%";
+
+        let calcEng = ((b * 8.2) + (m * 7.5) + (c * 6.8)) / 100;
+        document.getElementById('engProj').innerText = calcEng.toFixed(1);
+
+        document.getElementById('rB').innerText = b > 60 ? "Alto" : "Bajo";
+        document.getElementById('rM').innerText = m > 50 ? "Medio" : "Bajo";
+        document.getElementById('rC').innerText = c > 40 ? "Alto" : "Medio";
+
+        let rGlobal = document.getElementById('riskVal');
+        if (total > 110 || c > 45) {
+            rGlobal.innerText = "Alto"; rGlobal.style.color = "red";
+        } else if (total < 90) {
+            rGlobal.innerText = "Bajo"; rGlobal.style.color = "green";
+        } else {
+            rGlobal.innerText = "Medio"; rGlobal.style.color = "#4b2e2b";
+        }
+    } 
+</script> 
+</body> 
 </html>
-
