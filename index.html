@@ -1,386 +1,1250 @@
-<!DOCTYPE html> 
-<html lang="es"> 
-<head> 
-<meta charset="UTF-8"> 
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-<title>Dashboard Audiencias - Juan Valdez</title> 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"> 
-<style> 
-    :root { 
-        --jv-red: #9e1b2f; 
-        --jv-light-red: #c6374a; 
-        --jv-coffee: #4b2e2b; 
-        --bg-color: #f4f7f6; 
-        --text-main: #333333; 
-        --text-muted: #6b7280; 
-        --border-color: #eaedf1; 
-    } 
-    * { box-sizing: border-box; } 
-    body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg-color); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; } 
-    
-    /* Navegación */ 
-    .sidebar { width: 240px; background: #ffffff; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 20px 15px; } 
-    .brand { font-size: 18px; font-weight: 700; color: var(--jv-coffee); display: flex; align-items: center; gap: 10px; margin-bottom: 30px; padding-left: 10px; } 
-    .brand span { color: var(--jv-red); } 
-    .nav-btn { width: 100%; padding: 12px 15px; margin-bottom: 8px; border: none; background: transparent; color: var(--text-muted); font-size: 14px; font-weight: 500; text-align: left; border-radius: 8px; cursor: pointer; transition: all 0.2s; } 
-    .nav-btn:hover { background: #fff0f2; color: var(--jv-red); } 
-    .nav-btn.active { background: var(--jv-red); color: white; } 
-    
-    .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; } 
-    header { background: #ffffff; border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; } 
-    .header-title { font-size: 20px; font-weight: 600; color: var(--jv-coffee); } 
-    .content { flex: 1; padding: 30px; overflow-y: auto; } 
-    
-    /* Tarjetas y Grid */ 
-    .kpi-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; } 
-    .card { background: #ffffff; padding: 24px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); position: relative; margin-bottom: 20px; } 
-    .card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: var(--jv-red); border-radius: 12px 12px 0 0; } 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; } 
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
-     
-    .kpi-title { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; } 
-    .kpi-value { font-size: 28px; font-weight: 800; color: var(--jv-red); } 
-    
-    /* Sliders e Inputs */ 
-    .slider-group { margin-bottom: 20px; } 
-    .slider-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; } 
-    .slider { width: 100%; accent-color: var(--jv-red); cursor: pointer; } 
-    select.insight-filter { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); font-family: inherit; color: var(--jv-coffee); font-weight: 600; }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audience Intelligence Platform — Juan Valdez</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --red: #9e1b2f;
+  --red-light: #c6374a;
+  --red-pale: #fff0f2;
+  --red-border: #fcd5da;
+  --coffee: #3b1f1c;
+  --coffee-mid: #6b3a35;
+  --coffee-light: #c4a882;
+  --gold: #c9922a;
+  --gold-light: #f5d98b;
+  --bg: #f7f5f3;
+  --bg-alt: #ede9e5;
+  --surface: #ffffff;
+  --surface2: #faf9f7;
+  --border: #e8e2db;
+  --text: #1e1209;
+  --text-mid: #5c4538;
+  --text-muted: #9e8d82;
+  --green: #1a7a4a;
+  --green-pale: #e8f7ef;
+  --orange: #c76a1a;
+  --orange-pale: #fef3e8;
+  --sidebar-w: 252px;
+  --header-h: 62px;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 2px 12px rgba(59,31,28,0.07), 0 1px 3px rgba(59,31,28,0.04);
+  --shadow-md: 0 4px 24px rgba(59,31,28,0.10), 0 2px 8px rgba(59,31,28,0.06);
+  --shadow-lg: 0 12px 48px rgba(59,31,28,0.14), 0 4px 16px rgba(59,31,28,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);display:flex;}
+.sidebar{width:var(--sidebar-w);min-width:var(--sidebar-w);background:var(--coffee);display:flex;flex-direction:column;padding:0;overflow:hidden;position:relative;z-index:10;}
+.sidebar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:200px;background:linear-gradient(to top, rgba(158,27,47,0.18), transparent);pointer-events:none;}
+.sidebar-brand{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:8px;}
+.brand-logo{display:flex;align-items:center;gap:10px;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px;}
+.brand-logo .icon{width:34px;height:34px;background:var(--red);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 2px 8px rgba(158,27,47,0.5);}
+.brand-sub{font-size:10px;font-weight:500;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.2px;margin-top:4px;}
+.nav-section{padding:8px 12px;font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.5px;margin:4px 0 2px;}
+.nav-btn{width:100%;padding:10px 14px;margin-bottom:2px;border:none;background:transparent;color:rgba(255,255,255,0.55);font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;text-align:left;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all 0.18s ease;}
+.nav-btn .nav-icon{font-size:15px;width:20px;text-align:center;opacity:0.8;}
+.nav-btn:hover{background:rgba(255,255,255,0.07);color:#fff;}
+.nav-btn.active{background:var(--red);color:#fff;box-shadow:0 2px 12px rgba(158,27,47,0.45);}
+.sidebar-footer{margin-top:auto;padding:16px 16px 20px;border-top:1px solid rgba(255,255,255,0.08);}
+.sidebar-badge{background:rgba(255,255,255,0.06);border-radius:10px;padding:12px 14px;font-size:11.5px;color:rgba(255,255,255,0.5);line-height:1.6;}
+.sidebar-badge strong{color:rgba(255,255,255,0.8);display:block;font-size:12px;}
+.main-wrapper{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+header{height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);padding:0 28px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.header-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--coffee);}
+.header-right{display:flex;align-items:center;gap:12px;}
+.header-chip{background:var(--surface2);border:1px solid var(--border);padding:5px 12px;border-radius:20px;font-size:12px;color:var(--text-mid);font-weight:500;}
+.header-live{display:flex;align-items:center;gap:6px;background:var(--green-pale);border:1px solid rgba(26,122,74,0.2);padding:5px 12px;border-radius:20px;font-size:12px;color:var(--green);font-weight:600;}
+.live-dot{width:7px;height:7px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.content{flex:1;padding:24px 28px;overflow-y:auto;overflow-x:hidden;}
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);padding:22px 24px;position:relative;overflow:hidden;transition:box-shadow 0.2s,transform 0.2s;}
+.card:hover{box-shadow:var(--shadow-md);}
+.card-accent{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, var(--red), var(--coffee-mid));}
+.card-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.card-subtitle{font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+.section-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--coffee);letter-spacing:-0.5px;margin-bottom:4px;}
+.section-sub{font-size:13.5px;color:var(--text-muted);margin-bottom:22px;line-height:1.6;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all 0.2s;cursor:default;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg, var(--red), var(--red-light));}
+.kpi-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.kpi-value{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--coffee);letter-spacing:-1px;margin-bottom:6px;}
+.kpi-delta{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.kpi-delta.up{color:var(--green);background:var(--green-pale);}
+.kpi-delta.down{color:var(--red);background:var(--red-pale);}
+.kpi-delta.neutral{color:var(--gold);background:var(--orange-pale);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:18px;}
+.mb-18{margin-bottom:18px;}
+.insight-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.insight-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:all 0.2s;}
+.insight-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.insight-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:10px;}
+.insight-icon.red{background:var(--red-pale);}
+.insight-icon.green{background:var(--green-pale);}
+.insight-icon.gold{background:var(--orange-pale);}
+.insight-icon.coffee{background:#f3ede8;}
+.insight-title{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;}
+.insight-value{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--coffee);margin-bottom:4px;}
+.insight-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.rec-block{background:linear-gradient(135deg, var(--coffee) 0%, #5c2e28 100%);border-radius:var(--radius);padding:22px 24px;margin-bottom:18px;position:relative;overflow:hidden;}
+.rec-block::after{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.04);}
+.rec-block-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.rec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.rec-item{background:rgba(255,255,255,0.07);border-radius:10px;padding:14px 16px;border:1px solid rgba(255,255,255,0.1);}
+.rec-item-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:2px 8px;border-radius:10px;margin-bottom:8px;display:inline-block;}
+.rec-item-tag.urgent{background:rgba(158,27,47,0.4);color:#ffb3bc;}
+.rec-item-tag.high{background:rgba(201,146,42,0.3);color:#f5d98b;}
+.rec-item-tag.medium{background:rgba(26,122,74,0.3);color:#7dd9a8;}
+.rec-item p{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.5;font-weight:400;}
+.funnel-stage{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 20px;margin-bottom:8px;display:flex;align-items:center;gap:16px;transition:all 0.2s;position:relative;overflow:hidden;cursor:default;}
+.funnel-stage:hover{box-shadow:var(--shadow-md);transform:translateX(4px);}
+.funnel-stage-color{width:4px;border-radius:4px;align-self:stretch;min-height:48px;flex-shrink:0;}
+.funnel-stage-label{font-size:13px;font-weight:600;color:var(--coffee);margin-bottom:4px;}
+.funnel-bar{height:10px;background:var(--bg-alt);border-radius:5px;overflow:hidden;margin-top:6px;}
+.funnel-bar-fill{height:100%;border-radius:5px;}
+.funnel-stage-stats{text-align:right;flex-shrink:0;min-width:90px;}
+.funnel-users{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--coffee);}
+.funnel-pct{font-size:12px;color:var(--text-muted);}
+.funnel-drop{display:flex;align-items:center;gap:6px;padding:6px 12px;margin-bottom:8px;margin-left:30px;}
+.funnel-drop-line{flex:1;height:1px;border-top:1px dashed var(--border);}
+.funnel-drop-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+.drop-critical{background:#fee2e2;color:var(--red);}
+.drop-moderate{background:var(--orange-pale);color:var(--orange);}
+.drop-low{background:var(--green-pale);color:var(--green);}
+.data-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+.data-table th{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);}
+.data-table td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle;color:var(--text);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tbody tr:hover{background:var(--surface2);}
+.score-badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.score-high{background:#e0f7ec;color:#1a7a4a;}
+.score-med{background:var(--orange-pale);color:var(--orange);}
+.score-low{background:var(--red-pale);color:var(--red);}
+.value-pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:10px;text-transform:uppercase;letter-spacing:0.5px;}
+.val-platinum{background:linear-gradient(135deg,#e8e0d8,#f5f0ea);color:var(--coffee);border:1px solid #d4c9bc;}
+.val-gold{background:linear-gradient(135deg,#fef0c7,#fde68a);color:#92400e;border:1px solid #fbbf24;}
+.val-silver{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb;}
+.status-ind{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.s-active{color:var(--green);}.s-active .status-dot{background:var(--green);}
+.s-warning{color:var(--orange);}.s-warning .status-dot{background:var(--orange);}
+.s-alert{color:var(--red);}.s-alert .status-dot{background:var(--red);}
+.tracker-bar{width:80px;height:6px;background:var(--bg-alt);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;}
+.tracker-fill{height:100%;border-radius:3px;}
+.slider-group{margin-bottom:18px;}
+.slider-group label{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;color:var(--text-mid);margin-bottom:8px;}
+.slider-group label span{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--red);}
+input[type=range]{width:100%;height:6px;border-radius:3px;-webkit-appearance:none;appearance:none;background:linear-gradient(to right, var(--red) 0%, var(--red) 50%, var(--bg-alt) 50%);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--red);border-radius:50%;border:3px solid #fff;box-shadow:0 1px 6px rgba(158,27,47,0.4);cursor:pointer;}
+.field-select{padding:8px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--coffee);background:var(--surface);cursor:pointer;outline:none;}
+.field-select:focus{border-color:var(--red);}
+.search-input{padding:8px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--coffee);background:var(--surface);outline:none;width:240px;}
+.search-input:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(158,27,47,0.08);}
+.tab-bar{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);}
+.tab-btn{padding:9px 16px;font-size:13px;font-weight:600;color:var(--text-muted);border:none;background:transparent;cursor:pointer;border-radius:8px 8px 0 0;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.15s;}
+.tab-btn:hover{color:var(--coffee);background:var(--surface2);}
+.tab-btn.active{color:var(--red);border-bottom-color:var(--red);background:var(--surface);}
+.alert-banner{background:var(--red-pale);border:1px solid var(--red-border);border-radius:var(--radius-sm);padding:12px 16px;font-size:13px;color:var(--red);font-weight:500;display:flex;align-items:flex-start;gap:10px;line-height:1.5;}
+.alert-banner.green{background:var(--green-pale);border-color:rgba(26,122,74,0.2);color:var(--green);}
+.alert-banner.gold{background:var(--orange-pale);border-color:rgba(199,106,26,0.2);color:var(--orange);}
+.alert-banner.coffee{background:#f3ede8;border-color:rgba(107,58,53,0.2);color:var(--coffee-mid);}
+.sim-result{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-top:16px;}
+.sim-result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:14px;}
+.sim-metric{text-align:center;padding:12px;background:var(--surface);border-radius:10px;border:1px solid var(--border);}
+.sim-metric-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:4px;}
+.sim-metric-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--coffee);}
+.sim-narrative{font-size:13px;color:var(--text-mid);line-height:1.65;border-top:1px solid var(--border);padding-top:14px;}
+.modal-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(30,18,9,0.55);backdrop-filter:blur(6px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--surface);border-radius:18px;width:520px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);border:1px solid var(--border);position:relative;}
+.modal-top{background:linear-gradient(135deg, var(--coffee) 0%, #5c2e28 100%);padding:24px 28px;border-radius:18px 18px 0 0;}
+.modal-close{position:absolute;top:18px;right:22px;width:30px;height:30px;background:rgba(255,255,255,0.12);border:none;border-radius:50%;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s;}
+.modal-close:hover{background:rgba(255,255,255,0.22);}
+.modal-body{padding:24px 28px;}
+.modal-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;}
+.modal-id{font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;}
+.modal-tags{display:flex;gap:8px;margin-top:12px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.info-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.info-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-muted);margin-bottom:4px;}
+.info-value{font-size:14px;font-weight:600;color:var(--coffee);}
+.psy-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.psy-item{background:var(--surface2);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:10px 12px;}
+.psy-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--coffee);margin-bottom:4px;}
+.psy-value{font-size:12.5px;color:var(--text-mid);line-height:1.4;}
+.modal-section-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.modal-rec{background:var(--red-pale);border:1px solid var(--red-border);border-radius:10px;padding:14px 16px;}
+.modal-rec p{font-size:13px;color:var(--red);line-height:1.6;}
+.channel-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--border);}
+.channel-row:last-child{border-bottom:none;}
+.channel-name{font-size:14px;font-weight:600;color:var(--coffee);min-width:110px;}
+.channel-bar-wrap{flex:1;}
+.channel-bar{height:8px;background:var(--bg-alt);border-radius:4px;overflow:hidden;}
+.channel-bar-fill{height:100%;border-radius:4px;}
+.channel-meta{min-width:120px;text-align:right;font-size:12.5px;color:var(--text-muted);}
+.channel-meta strong{color:var(--coffee);font-weight:700;}
+.formula-box{background:linear-gradient(135deg,var(--coffee),#5c2e28);border-radius:12px;padding:20px 24px;color:#fff;margin-bottom:16px;}
+.formula-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.6);margin-bottom:10px;}
+.formula-eq{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#fff;line-height:1.8;word-break:break-word;}
+.formula-eq span{color:var(--gold-light);}
+.formula-result{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.15);font-size:13px;color:rgba(255,255,255,0.8);}
+.monetize-actor{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+.actor-icon{font-size:20px;margin-bottom:6px;}
+.actor-name{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--coffee);margin-bottom:4px;}
+.actor-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.weekly-table{width:100%;border-collapse:collapse;font-size:13px;}
+.weekly-table th{padding:10px 12px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid var(--border);background:var(--surface2);}
+.weekly-table th:first-child{text-align:left;}
+.weekly-table td{padding:10px 12px;text-align:center;border-bottom:1px solid var(--border);}
+.weekly-table td:first-child{text-align:left;font-weight:600;color:var(--coffee);}
+.weekly-table tr:hover td{background:var(--surface2);}
+.trend-down{color:var(--red);font-size:11px;}
+.trend-up{color:var(--green);font-size:11px;}
+.flex-between{display:flex;justify-content:space-between;align-items:center;}
+.flex-center{display:flex;align-items:center;}
+.gap-12{gap:12px;}.gap-16{gap:16px;}
+.mt-4{margin-top:4px;}.mt-8{margin-top:8px;}.mt-16{margin-top:16px;}.mt-20{margin-top:20px;}
+.mb-4{margin-bottom:4px;}.mb-8{margin-bottom:8px;}.mb-12{margin-bottom:12px;}.mb-16{margin-bottom:16px;}
+.text-muted{color:var(--text-muted);}.text-sm{font-size:12.5px;}.text-xs{font-size:11.5px;}
+.fw-700{font-weight:700;}.fw-600{font-weight:600;}
+.text-red{color:var(--red);}.text-coffee{color:var(--coffee);}.text-green{color:var(--green);}
+.syne{font-family:'Syne',sans-serif;}
+.divider{border:none;border-top:1px solid var(--border);margin:16px 0;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-thumb{background:rgba(59,31,28,0.15);border-radius:10px;}
+.fw-hero{background:linear-gradient(135deg,var(--coffee) 0%,#5c2e28 60%,#9e1b2f 100%);border-radius:18px;padding:32px 36px;margin-bottom:24px;position:relative;overflow:hidden;}
+.fw-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,0.04);}
+.fw-hero-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:6px;letter-spacing:-0.5px;}
+.fw-hero-sub{font-size:13.5px;color:rgba(255,255,255,0.55);margin-bottom:24px;}
+.fw-flow{display:flex;align-items:center;gap:0;position:relative;z-index:1;}
+.fw-flow-step{display:flex;flex-direction:column;align-items:center;flex:1;}
+.fw-flow-num{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;border:2px solid rgba(255,255,255,0.2);}
+.fw-flow-num:hover{transform:scale(1.12);box-shadow:0 6px 24px rgba(0,0,0,0.3);}
+.fw-flow-num.n1{background:linear-gradient(135deg,#c9922a,#e8b44a);}
+.fw-flow-num.n2{background:linear-gradient(135deg,#6b3a35,#9e5a52);}
+.fw-flow-num.n3{background:linear-gradient(135deg,#9e1b2f,#c6374a);}
+.fw-flow-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);text-align:center;margin-bottom:4px;}
+.fw-flow-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;text-align:center;}
+.fw-flow-arrow{font-size:22px;color:rgba(255,255,255,0.3);margin:0 4px;padding-bottom:28px;}
+.fw-reversa{margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;gap:8px;}
+.fw-reversa-badge{background:rgba(201,146,42,0.25);border:1px solid rgba(201,146,42,0.4);border-radius:20px;padding:4px 14px;font-size:11.5px;font-weight:700;color:var(--gold-light);}
+.pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:20px;}
+.pillar-card{border-radius:16px;overflow:hidden;border:2px solid var(--border);transition:all 0.25s;position:relative;}
+.pillar-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+.pillar-card.open{border-color:var(--pillar-color,var(--red));box-shadow:0 0 0 3px var(--pillar-glow,rgba(158,27,47,0.12)),var(--shadow-md);}
+.pillar-header{padding:22px 20px 18px;cursor:pointer;position:relative;overflow:hidden;}
+.pillar-header::after{content:'';position:absolute;top:-20px;right:-20px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,0.07);}
+.pillar-num{position:absolute;top:10px;right:16px;font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:rgba(255,255,255,0.15);line-height:1;}
+.pillar-icon{font-size:30px;margin-bottom:8px;display:block;}
+.pillar-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.65);margin-bottom:5px;}
+.pillar-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;line-height:1.3;}
+.pillar-cta{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.5);}
+.pillar-arrow{display:inline-block;transition:transform 0.25s;}
+.pillar-card.open .pillar-arrow{transform:rotate(90deg);}
+.pillar-body{display:none;padding:0 18px 18px;background:var(--surface);}
+.pillar-card.open .pillar-body{display:block;}
+.pillar-inner{background:var(--surface2);border-radius:10px;padding:14px 16px;border:1px solid var(--border);}
+.pillar-desc{font-size:12.5px;color:var(--text-mid);line-height:1.65;margin-bottom:12px;}
+.pillar-tags{display:flex;flex-wrap:wrap;gap:5px;}
+.ptag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--bg-alt);color:var(--text-mid);}
+.ptag.accent{background:var(--red-pale);color:var(--red);}
+.pillar-p1{--pillar-color:#c9922a;--pillar-glow:rgba(201,146,42,0.18);}
+.pillar-p1 .pillar-header{background:linear-gradient(135deg,#c9922a,#8a5e10);}
+.pillar-p2{--pillar-color:#6b3a35;--pillar-glow:rgba(107,58,53,0.18);}
+.pillar-p2 .pillar-header{background:linear-gradient(135deg,#6b3a35,#3b1f1c);}
+.pillar-p3{--pillar-color:#9e1b2f;--pillar-glow:rgba(158,27,47,0.18);}
+.pillar-p3 .pillar-header{background:linear-gradient(135deg,#9e1b2f,#6b0f1f);}
+.fw-subtabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap;}
+.fw-subtab{padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all 0.18s;}
+.fw-subtab:hover{background:var(--surface2);}
+.fw-subtab.active{background:var(--coffee);color:#fff;border-color:var(--coffee);}
+.fw-subpanel{display:none;}
+.fw-subpanel.active{display:block;}
+.eng-visual{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.eng-big-card{border-radius:14px;padding:22px;position:relative;overflow:hidden;}
+.eng-axial-big{background:var(--red-pale);border:2px solid var(--red-border);}
+.eng-trans-big{background:#f3ede8;border:2px solid rgba(107,58,53,0.2);}
+.eng-big-emoji{font-size:36px;margin-bottom:10px;}
+.eng-big-tag{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;}
+.eng-axial-big .eng-big-tag{color:var(--red);}
+.eng-trans-big .eng-big-tag{color:var(--coffee-mid);}
+.eng-big-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--coffee);margin-bottom:8px;}
+.eng-big-desc{font-size:12.5px;color:var(--text-mid);line-height:1.6;margin-bottom:12px;}
+.eng-big-example{font-size:12px;padding:10px 12px;border-radius:8px;line-height:1.5;}
+.eng-axial-big .eng-big-example{background:rgba(158,27,47,0.08);color:var(--red);}
+.eng-trans-big .eng-big-example{background:rgba(107,58,53,0.08);color:var(--coffee-mid);}
+.eng-index-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.eng-idx{border-radius:10px;padding:14px;text-align:center;}
+.eng-idx-icon{font-size:24px;margin-bottom:6px;}
+.eng-idx-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;}
+.eng-idx-desc{font-size:11.5px;color:var(--text-mid);}
+.cv-track{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.cv-card{border-radius:12px;padding:18px;text-align:center;position:relative;overflow:hidden;transition:transform 0.2s;}
+.cv-card:hover{transform:scale(1.03);}
+.cv-card-stable{background:var(--green-pale);border:2px solid rgba(26,122,74,0.2);}
+.cv-card-variant{background:var(--orange-pale);border:2px solid rgba(199,106,26,0.2);}
+.cv-card-divergent{background:var(--red-pale);border:2px solid var(--red-border);}
+.cv-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px;}
+.cv-card-stable .cv-value{color:var(--green);}
+.cv-card-variant .cv-value{color:var(--orange);}
+.cv-card-divergent .cv-value{color:var(--red);}
+.cv-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.cv-desc{font-size:11.5px;line-height:1.5;}
+.cv-card-stable .cv-desc{color:var(--green);}
+.cv-card-variant .cv-desc{color:var(--orange);}
+.cv-card-divergent .cv-desc{color:var(--red);}
+.cv-meter{height:6px;border-radius:3px;margin-top:10px;overflow:hidden;background:rgba(255,255,255,0.5);}
+.cv-fill{height:100%;border-radius:3px;}
+.sesgo-big-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.sesgo-big{border-radius:14px;padding:20px;border:2px solid transparent;transition:all 0.22s;cursor:default;position:relative;overflow:hidden;}
+.sesgo-big:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+.sesgo-big-1{background:#fff8f0;border-color:rgba(199,106,26,0.25);}
+.sesgo-big-2{background:var(--red-pale);border-color:var(--red-border);}
+.sesgo-big-3{background:#f3ede8;border-color:rgba(107,58,53,0.2);}
+.sesgo-big-emoji{font-size:40px;margin-bottom:12px;display:block;}
+.sesgo-big-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:8px;}
+.sesgo-big-1 .sesgo-big-name{color:var(--orange);}
+.sesgo-big-2 .sesgo-big-name{color:var(--red);}
+.sesgo-big-3 .sesgo-big-name{color:var(--coffee-mid);}
+.sesgo-big-desc{font-size:12.5px;color:var(--text-mid);line-height:1.6;margin-bottom:10px;}
+.sesgo-big-ex{font-size:11.5px;padding:8px 12px;border-radius:8px;line-height:1.5;}
+.sesgo-big-1 .sesgo-big-ex{background:rgba(199,106,26,0.1);color:var(--orange);}
+.sesgo-big-2 .sesgo-big-ex{background:rgba(158,27,47,0.08);color:var(--red);}
+.sesgo-big-3 .sesgo-big-ex{background:rgba(107,58,53,0.08);color:var(--coffee-mid);}
+.sesgo-risk{display:flex;align-items:center;gap:8px;margin-top:12px;}
+.sesgo-risk-label{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);}
+.sesgo-dots{display:flex;gap:4px;}
+.sdot{width:8px;height:8px;border-radius:50%;background:var(--bg-alt);}
+.sdot.on-orange{background:var(--orange);}
+.sdot.on-red{background:var(--red);}
+.ams-matrix{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;margin-top:12px;}
+.ams-cell{border-radius:14px;padding:18px 20px;border:2px solid;transition:all 0.22s;cursor:default;}
+.ams-cell:hover{transform:scale(1.02);box-shadow:var(--shadow-md);}
+.ams-cell-ue{background:#fffbf0;border-color:rgba(201,146,42,0.35);}
+.ams-cell-ui{background:#f7f3f0;border-color:rgba(107,58,53,0.2);}
+.ams-cell-ke{background:var(--green-pale);border-color:rgba(26,122,74,0.2);}
+.ams-cell-ki{background:var(--red-pale);border-color:var(--red-border);}
+.ams-cell-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ams-cell-icon{font-size:26px;}
+.ams-cell-badge{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:10px;}
+.ams-cell-ue .ams-cell-badge{background:rgba(201,146,42,0.2);color:#8a5e10;}
+.ams-cell-ui .ams-cell-badge{background:rgba(107,58,53,0.12);color:var(--coffee-mid);}
+.ams-cell-ke .ams-cell-badge{background:rgba(26,122,74,0.12);color:var(--green);}
+.ams-cell-ki .ams-cell-badge{background:rgba(158,27,47,0.1);color:var(--red);}
+.ams-cell-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;margin-bottom:8px;color:var(--coffee);}
+.ams-tool{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;padding:4px 10px;border-radius:6px;margin:3px 3px 3px 0;background:rgba(0,0,0,0.04);color:var(--text-mid);}
+.ams-axes{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.ams-axis-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);}
+.ams-axis-arrow{flex:1;height:2px;background:var(--border);margin:0 8px;position:relative;}
+.ams-axis-arrow::after{content:'▶';position:absolute;right:-6px;top:-8px;font-size:12px;color:var(--border);}
+.cluster-legend{display:flex;gap:12px;flex-wrap:wrap;}
+.cluster-dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex-shrink:0;}
+.cluster-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-mid);}
+.impact-hero{background:linear-gradient(135deg,var(--coffee),#9e1b2f);border-radius:18px;padding:28px 32px;margin-bottom:22px;color:#fff;position:relative;overflow:hidden;}
+.impact-hero::before{content:'';position:absolute;top:-50px;right:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.04);}
+.impact-hero-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;}
+.impact-hero-sub{font-size:13px;color:rgba(255,255,255,0.55);}
+.before-after-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.before-card{background:var(--surface);border:2px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.before-card::before{content:'ANTES';position:absolute;top:12px;right:14px;font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--text-muted);opacity:0.5;}
+.after-card{background:var(--surface);border:2px solid rgba(26,122,74,0.3);border-radius:14px;padding:20px;position:relative;overflow:hidden;}
+.after-card::before{content:'CON PLATAFORMA';position:absolute;top:12px;right:14px;font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--green);opacity:0.7;}
+.ba-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--coffee);margin-bottom:14px;}
+.ba-metric{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.ba-metric:last-child{border-bottom:none;}
+.ba-label{font-size:12.5px;color:var(--text-mid);}
+.ba-value{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.before-card .ba-value{color:var(--red);}
+.after-card .ba-value{color:var(--green);}
+.improvement-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.improvement-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;position:relative;overflow:hidden;}
+.improvement-item::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green);}
+.improvement-pct{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--green);margin-bottom:4px;}
+.improvement-label{font-size:11.5px;color:var(--text-muted);font-weight:600;}
+</style>
+</head>
+<body>
 
-    /* Tablas */ 
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; } 
-    th { color: var(--text-muted); padding: 12px; border-bottom: 1px solid var(--border-color); text-transform: uppercase; font-size: 12px; } 
-    td { padding: 12px; border-bottom: 1px solid var(--border-color); vertical-align: middle; } 
-    
-    /* Tracker bars de la sección Tablero */
-    .tracker-bar { width: 80px; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; display: inline-block; }
-    .tracker-fill { height: 100%; border-radius: 4px; }
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 5px; }
-    .dot-orange { background: #f59e0b; }
-    .dot-yellow { background: #fbbf24; }
-    .dot-red { background: #ef4444; }
+<!-- MODAL PERFIL -->
+<div id="profileModal" class="modal-overlay" onclick="closeProfileModal(event)">
+  <div class="modal-box">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeProfileModal()">&times;</button>
+      <div class="modal-name" id="modalName">—</div>
+      <div class="modal-id" id="modalId">ID: #JV-0000</div>
+      <div class="modal-tags" id="modalTags"></div>
+    </div>
+    <div class="modal-body">
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">Edad</div><div class="info-value" id="mAge">—</div></div>
+        <div class="info-item"><div class="info-label">Ocupación</div><div class="info-value" id="mOcup">—</div></div>
+        <div class="info-item"><div class="info-label">Ticket Promedio</div><div class="info-value text-red" id="mTicket">—</div></div>
+        <div class="info-item"><div class="info-label">Engagement Score</div><div class="info-value" id="mScore">—</div></div>
+        <div class="info-item"><div class="info-label">Canal Preferido</div><div class="info-value" id="mCanal">—</div></div>
+        <div class="info-item"><div class="info-label">Perfil MBTI</div><div class="info-value" id="mMbti">—</div></div>
+      </div>
+      <div class="modal-section-title">Modelo de Motivación y Valores</div>
+      <div class="psy-grid">
+        <div class="psy-item"><div class="psy-label">Valores Centrales</div><div class="psy-value" id="mCreencias">—</div></div>
+        <div class="psy-item"><div class="psy-label">Motivación de Consumo</div><div class="psy-value" id="mMotiv">—</div></div>
+        <div class="psy-item"><div class="psy-label">Necesidad Dominante</div><div class="psy-value" id="mNecesidad">—</div></div>
+        <div class="psy-item"><div class="psy-label">Experiencia Reforzada</div><div class="psy-value" id="mExp">—</div></div>
+      </div>
+      <div class="modal-section-title" style="margin-top:18px;">Tipo de Vínculo con la Marca</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <div style="flex:1;background:var(--red-pale);border-radius:8px;padding:10px 12px;border-left:3px solid var(--red);">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--red);margin-bottom:3px;">Vínculo Transaccional</div>
+          <div id="mEngAxial" style="font-size:12.5px;color:var(--text-mid);">—</div>
+        </div>
+        <div style="flex:1;background:#f3ede8;border-radius:8px;padding:10px 12px;border-left:3px solid var(--coffee-mid);">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--coffee-mid);margin-bottom:3px;">Vínculo de Fidelización</div>
+          <div id="mEngTrans" style="font-size:12.5px;color:var(--text-mid);">—</div>
+        </div>
+      </div>
+      <div class="modal-section-title">Recomendación Estratégica</div>
+      <div class="modal-rec"><p id="mRec">—</p></div>
+    </div>
+  </div>
+</div>
 
-    .alert-box { background: #fff0f2; color: var(--jv-red); padding: 12px; border-radius: 8px; font-size: 12px; margin-top: 15px; border: 1px solid #fecaca; } 
-</style> 
-</head> 
-<body> 
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-logo">
+      <div class="icon">☕</div>
+      <div><div>Juan Valdez</div></div>
+    </div>
+    <div class="brand-sub">Audience Intelligence Platform</div>
+  </div>
+  <div class="nav-section">Inteligencia</div>
+  <button class="nav-btn active" onclick="show('home',this)"><span class="nav-icon">◈</span>Executive Overview</button>
+  <button class="nav-btn" onclick="show('insights',this)"><span class="nav-icon">◉</span>Consumer Insights</button>
+  <button class="nav-btn" onclick="show('instrumentos',this)"><span class="nav-icon">🧠</span>Analytical Framework</button>
+  <div class="nav-section">Audiencias</div>
+  <button class="nav-btn" onclick="show('audiencias',this)"><span class="nav-icon">⊞</span>Audience Catalog</button>
+  <button class="nav-btn" onclick="show('funnel',this)"><span class="nav-icon">▽</span>Conversion Funnel</button>
+  <div class="nav-section">Planificación</div>
+  <button class="nav-btn" onclick="show('portafolio',this)"><span class="nav-icon">◫</span>Media Portfolio</button>
+  <button class="nav-btn" onclick="show('tablero',this)"><span class="nav-icon">⚡</span>Performance Monitor</button>
+  <button class="nav-btn" onclick="show('impacto',this)"><span class="nav-icon">📈</span>Impact Tracker</button>
+  <div class="sidebar-footer">
+    <div class="sidebar-badge">
+      <strong>Datos actualizados</strong>
+      Abril 2026 · Q2 2026<br>
+      152,430 consumidores analizados
+    </div>
+  </div>
+</div>
 
-<div class="sidebar"> 
-    <div class="brand">☕ Juan<span>Valdez</span></div> 
-    <button class="nav-btn active" onclick="show('home', this)">Inicio</button> 
-    <button class="nav-btn" onclick="show('insights', this)">Insights Audiencia</button> 
-    <button class="nav-btn" onclick="show('audiencias', this)">Catálogo Audiencias</button> 
-    <button class="nav-btn" onclick="show('funnel', this)">Conversion Funnel</button> 
-    <button class="nav-btn" onclick="show('portafolio', this)">Portafolio Publicitario</button> 
-    <button class="nav-btn" onclick="show('tablero', this)">Tablero de Control</button>
-</div> 
+<!-- MAIN -->
+<div class="main-wrapper">
+  <header>
+    <div class="header-title" id="headerTitle">Executive Overview</div>
+    <div class="header-right">
+      <div class="header-live"><div class="live-dot"></div>Live</div>
+      <div class="header-chip">📅 Abril 2026</div>
+      <div class="header-chip" style="background:var(--red);color:#fff;border-color:var(--red);font-weight:700;">CMO View</div>
+    </div>
+  </header>
 
-<div class="main-wrapper"> 
-    <header> 
-        <div class="header-title">Master Metrics - Análisis de Audiencias</div> 
-        <div class="header-controls">📅 Abril 2026 | <span style="background:var(--jv-red); color:white; padding:4px 10px; border-radius:15px; font-size:12px;">JV</span></div> 
-    </header> 
-    
-    <div class="content"> 
-        <div id="home"> 
-            <div class="kpi-container"> 
-                <div class="card"><div class="kpi-title">Usuarios Totales</div><div class="kpi-value">152,430</div><small style="color:green">▲ 12.5%</small></div> 
-                <div class="card"><div class="kpi-title">Avg. LTV</div><div class="kpi-value">$45.20</div><small style="color:green">▲ 4.2%</small></div> 
-                <div class="card"><div class="kpi-title">CAC Adquisición</div><div class="kpi-value">$8.15</div><small style="color:red">▼ 2.1%</small></div> 
-                <div class="card"><div class="kpi-title">Global ROAS</div><div class="kpi-value">4.2x</div><small style="color:green">Target: 4.0x</small></div> 
-            </div> 
-            <div class="card"> 
-                <h3>Audience Engagement Trend (Weekly)</h3> 
-                <div style="height: 300px;"><canvas id="homeChart"></canvas></div> 
-            </div> 
-        </div> 
+  <div class="content">
 
-        <div id="insights" style="display:none"> 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin:0; color:var(--jv-coffee);">Perfil Psicográfico y de Consumo</h2>
-                <div>
-                    <span style="font-size: 13px; font-weight: 600; margin-right: 10px;">Segmento:</span>
-                    <select class="insight-filter" id="segmentSelect" onchange="updateInsightData()">
-                        <option value="all">Todos los Segmentos</option>
-                        <option value="genz">Generación Z (18-25)</option>
-                        <option value="traditional">Tradicionales (40+)</option>
-                        <option value="premium">Premium / Coffee Lovers</option>
-                    </select>
-                </div>
+    <!-- ══ HOME ══ -->
+    <div id="home">
+      <div style="background:linear-gradient(135deg,var(--coffee) 0%,#5c2e28 70%,#9e1b2f 100%);border-radius:18px;padding:30px 34px;margin-bottom:22px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-50px;right:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+        <div style="position:absolute;bottom:-30px;left:30%;width:150px;height:150px;border-radius:50%;background:rgba(201,146,42,0.07);"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;position:relative;z-index:1;">
+          <div style="max-width:600px;">
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-bottom:8px;">Resumen Ejecutivo · Q2 2026</div>
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;margin-bottom:12px;letter-spacing:-0.3px;">Juan Valdez registra su mejor trimestre<br>en volumen de consumidores activos</div>
+            <div style="font-size:13.5px;color:rgba(255,255,255,0.65);line-height:1.75;margin-bottom:18px;">Con <strong style="color:#fff;">152,430 consumidores activos</strong> y un ROAS de 4.2×, la marca supera el objetivo trimestral. El segmento Premium lidera en valor de vida del cliente (LTV ×3.2), mientras la audiencia Gen Z representa la mayor oportunidad de crecimiento con un churn rate controlable del 5.1%. La fricción en el flujo de compra digital sigue siendo el principal punto de pérdida de revenue, estimada en <strong style="color:#ffb3bc;">$2.1M mensuales</strong>.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <div style="background:rgba(255,255,255,0.1);border-radius:8px;padding:8px 14px;border:1px solid rgba(255,255,255,0.15);">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:3px;">Oportunidad crítica</div>
+                <div style="font-size:13px;font-weight:700;color:#fff;">Checkout App · −28% pérdida</div>
+              </div>
+              <div style="background:rgba(201,146,42,0.2);border-radius:8px;padding:8px 14px;border:1px solid rgba(201,146,42,0.3);">
+                <div style="font-size:10px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:3px;">Mayor ROI proyectado</div>
+                <div style="font-size:13px;font-weight:700;color:var(--gold-light);">Medellín · Expansión recomendada</div>
+              </div>
             </div>
-            <div class="grid-3">
-                <div class="card"><div class="kpi-title">Ticket Promedio</div><div class="kpi-value" id="insightTicket">$18.400</div><small>Gasto por visita</small></div>
-                <div class="card"><div class="kpi-title">Producto Estrella</div><div class="kpi-value" id="insightProduct" style="font-size: 20px; padding-top: 10px;">Tinto Campesino</div><small>Basado en volumen</small></div>
-                <div class="card"><div class="kpi-title">Churn Rate</div><div class="kpi-value" id="insightChurn">3.2%</div><small style="color:green">▼ 0.5% este mes</small></div>
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,0.35);margin-bottom:8px;">ROAS Global</div>
+            <div style="font-family:'Syne',sans-serif;font-size:52px;font-weight:800;color:#fff;line-height:1;margin-bottom:4px;">4.2×</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);">Target superado · 4.0×</div>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Consumidores Activos</div><div class="kpi-value">152,430</div><span class="kpi-delta up">▲ 12.5% vs Q1</span></div>
+        <div class="kpi-card"><div class="kpi-label">Valor de Vida del Cliente</div><div class="kpi-value">$45.20</div><span class="kpi-delta up">▲ 4.2% MoM</span></div>
+        <div class="kpi-card"><div class="kpi-label">Costo de Adquisición</div><div class="kpi-value">$8.15</div><span class="kpi-delta down">▼ 2.1% optimizado</span></div>
+        <div class="kpi-card"><div class="kpi-label">ROAS Global</div><div class="kpi-value">4.2×</div><span class="kpi-delta neutral">Target 4.0× ✓</span></div>
+      </div>
+      <div class="insight-grid">
+        <div class="insight-card"><div class="insight-icon coffee">🏪</div><div class="insight-title">Canal Dominante</div><div class="insight-value">Tienda Física</div><div class="insight-desc">68% de conversiones físicas vs 32% digital. Segmento Tradicionales lidera.</div></div>
+        <div class="insight-card"><div class="insight-icon gold">⏰</div><div class="insight-title">Hora Pico</div><div class="insight-value">9am – 11am</div><div class="insight-desc">41% del tráfico. After office (6-8pm) crece +18% semana a semana.</div></div>
+        <div class="insight-card"><div class="insight-icon red">☕</div><div class="insight-title">Producto Estrella</div><div class="insight-value">Tinto Campesino</div><div class="insight-desc">34% de volumen total. V60 Geisha lidera en ticket promedio ($42K/visita).</div></div>
+        <div class="insight-card"><div class="insight-icon red">⚠️</div><div class="insight-title">Punto de Pérdida</div><div class="insight-value">Paso a Compra</div><div class="insight-desc">−28% de pérdida en App. Fricción detectada en checkout móvil.</div></div>
+      </div>
+      <div class="card mb-18">
+        <div class="card-accent"></div>
+        <div class="flex-between mb-12">
+          <div>
+            <div class="card-title">Mapa de Segmentación · Clustering de Audiencias</div>
+            <div class="card-subtitle">Distribución de 152,430 consumidores en 4 grupos por comportamiento de consumo y valor de ticket · K-Means aplicado sobre 2 dimensiones</div>
+          </div>
+          <div class="cluster-legend">
+            <div class="cluster-legend-item"><div class="cluster-dot" style="background:#9e1b2f;"></div>Premium</div>
+            <div class="cluster-legend-item"><div class="cluster-dot" style="background:#c9922a;"></div>Office Workers</div>
+            <div class="cluster-legend-item"><div class="cluster-dot" style="background:#1a7a4a;"></div>Gen Z</div>
+            <div class="cluster-legend-item"><div class="cluster-dot" style="background:#6b3a35;"></div>Digital Nomads</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:start;">
+          <div style="height:280px;"><canvas id="clusterChart"></canvas></div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">Descripción de Segmentos</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="background:var(--red-pale);border-left:3px solid var(--red);border-radius:0 8px 8px 0;padding:10px 12px;"><div style="font-size:12px;font-weight:700;color:var(--red);">Premium · Coffee Lovers</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Ticket alto · Fidelización máxima · LTV ×3.2</div></div>
+              <div style="background:var(--orange-pale);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 12px;"><div style="font-size:12px;font-weight:700;color:var(--gold);">Office Workers</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Volumen medio · Compra grupal · Rutina laboral</div></div>
+              <div style="background:var(--green-pale);border-left:3px solid var(--green);border-radius:0 8px 8px 0;padding:10px 12px;"><div style="font-size:12px;font-weight:700;color:var(--green);">Generation Z</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Volumen alto · Canal digital · Churn 5.1%</div></div>
+              <div style="background:#f3ede8;border-left:3px solid var(--coffee-mid);border-radius:0 8px 8px 0;padding:10px 12px;"><div style="font-size:12px;font-weight:700;color:var(--coffee-mid);">Digital Nomads</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Ticket medio · App-first · Sensibles a UX</div></div>
             </div>
-            <div class="grid-2"> 
-                <div class="card"><h3>Atributos de Valor (Psicografía)</h3><div style="height: 300px;"><canvas id="radarChart"></canvas></div></div> 
-                <div class="card"><h3>Preferencia por Canal de Compra</h3><div style="height: 300px;"><canvas id="channelsChart"></canvas></div></div> 
-            </div> 
-            <div class="grid-2">
-                <div class="card"><h3>Distribución Geográfica</h3><div style="height: 250px;"><canvas id="territoryChart"></canvas></div></div>
-                <div class="card"><h3>Intensidad de Consumo (Horas Pico)</h3><div style="height: 250px;"><canvas id="heatChart"></canvas></div></div>
-            </div>
-        </div> 
+          </div>
+        </div>
+        <div class="alert-banner coffee mt-16">📊 <span><strong>Metodología:</strong> Segmentación obtenida mediante análisis de variabilidad (CV) y agrupamiento estadístico sobre las variables frecuencia de compra y ticket promedio. Grupos con comportamiento homogéneo interno y máxima diferenciación entre ellos.</span></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="card"><div class="card-accent"></div><div class="flex-between mb-16"><div><div class="card-title">Tendencia de Engagement · 8 Semanas</div><div class="card-subtitle">Evolución del índice compuesto por segmento activo</div></div></div><div style="height:240px;"><canvas id="homeChart"></canvas></div></div>
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-12">Distribución por Segmento Estratégico</div><div style="height:240px;"><canvas id="segmentDonut"></canvas></div></div>
+      </div>
+      <div class="rec-block">
+        <div class="rec-block-title">🎯 Recomendaciones Estratégicas · Alta Prioridad</div>
+        <div class="rec-grid">
+          <div class="rec-item"><span class="rec-item-tag urgent">Urgente</span><p>Rediseñar el flujo de compra en la App. La fricción en checkout genera una pérdida de $2.1M en revenue mensual potencial del segmento Gen Z y Digital Nomads.</p></div>
+          <div class="rec-item"><span class="rec-item-tag high">Alta Prioridad</span><p>Activar campaña de combos en horas valle (2–5pm). Potencial de incremento del 22% en ticket promedio para el segmento de Oficinistas.</p></div>
+          <div class="rec-item"><span class="rec-item-tag medium">Oportunidad</span><p>Personalizar contenido para el segmento Premium con énfasis en origen y proceso del grano. CTR esperado de +35% basado en perfil motivacional.</p></div>
+        </div>
+      </div>
+      <div class="card mt-16">
+        <div class="card-accent"></div>
+        <div class="flex-between mb-16"><div><div class="card-title">Resumen del Journey del Consumidor · Bogotá</div><div class="card-subtitle">Pérdida por etapa del embudo de conversión · Análisis diferencial de audiencias</div></div></div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;text-align:center;">
+          <div style="background:var(--surface2);border-radius:10px;padding:14px 8px;border:1px solid var(--border);"><div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;">Alcance</div><div class="syne" style="font-size:22px;font-weight:800;color:var(--coffee);">1,900</div><div style="font-size:11px;color:var(--text-muted);">base</div></div>
+          <div style="background:var(--surface2);border-radius:10px;padding:14px 8px;border:1px solid var(--border);"><div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;">Interés</div><div class="syne" style="font-size:22px;font-weight:800;color:var(--coffee);">1,200</div><div style="font-size:11px;color:var(--orange);">−37%</div></div>
+          <div style="background:var(--surface2);border-radius:10px;padding:14px 8px;border:1px solid var(--border);"><div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;">Intención</div><div class="syne" style="font-size:22px;font-weight:800;color:var(--coffee);">10</div><div style="font-size:11px;color:var(--red);">−99%</div></div>
+          <div style="background:var(--surface2);border-radius:10px;padding:14px 8px;border:1px solid var(--border);"><div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:6px;">Compra</div><div class="syne" style="font-size:22px;font-weight:800;color:var(--coffee);">5</div><div style="font-size:11px;color:var(--orange);">−50%</div></div>
+          <div style="background:linear-gradient(135deg,var(--red-pale),#fff);border-radius:10px;padding:14px 8px;border:1px solid var(--red-border);"><div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;margin-bottom:6px;">Lealtad</div><div class="syne" style="font-size:22px;font-weight:800;color:var(--red);">2</div><div style="font-size:11px;color:var(--green);">LTV ×3.2</div></div>
+        </div>
+      </div>
+    </div>
 
-        <div id="tablero" style="display:none">
-            <div class="card">
-                <h3 style="text-transform: uppercase; letter-spacing: 1px;">Tablero de Control Interno Multi-Cliente</h3>
-                <table>
-                    <thead><tr><th>Platform</th><th>Tracker</th><th>Budget</th><th>Spend to Date</th><th>Expected Spend</th><th>Remaining Daily Spent</th></tr></thead>
-                    <tbody>
-                        <tr><td><strong>Meta Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 85%; background: blue;"></div></div></td><td>$10.00M</td><td>$18.96M <span class="status-dot dot-orange"></span></td><td>$870.75</td><td>$870.75</td></tr>
-                        <tr><td><strong>Google Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 45%; background: green;"></div></div></td><td>$2.000.000</td><td>$5.94M <span class="status-dot dot-yellow"></span></td><td>$540.10</td><td>$540.10</td></tr>
-                        <tr><td><strong>Tik Tok Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 70%; background: cyan;"></div></div></td><td>$54.000</td><td>$22.1M <span class="status-dot dot-red"></span></td><td>$1,240.05</td><td>$1,240.05</td></tr>
-                        <tr><td><strong>LinkedIn Ads</strong></td><td><div class="tracker-bar"><div class="tracker-fill" style="width: 35%; background: limegreen;"></div></div></td><td>$40,000</td><td>$40,000 <span class="status-dot dot-red"></span></td><td>$954.24</td><td>$954.24</td></tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- ══ CONSUMER INSIGHTS ══ -->
+    <div id="insights" style="display:none">
+      <div class="flex-between mb-18">
+        <div><div class="section-title">Consumer Insights</div><div class="section-sub">Perfil psicográfico y de consumo por segmento estratégico</div></div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <!-- ── AJUSTE 1: selector de ciudad para la tabla ── -->
+          <select class="field-select" id="citySelect" onchange="renderWeeklyTable()">
+            <option value="bogota">Bogotá</option>
+            <option value="medellin">Medellín</option>
+            <option value="cali">Cali</option>
+            <option value="barranquilla">Barranquilla</option>
+          </select>
+          <select class="field-select" id="segmentSelect" onchange="updateInsightData()">
+            <option value="all">Todos los Segmentos</option>
+            <option value="genz">Generation Z (18–25)</option>
+            <option value="traditional">Consumidores Tradicionales (40+)</option>
+            <option value="premium">Premium / Coffee Lovers</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-4 mb-18">
+        <div class="kpi-card"><div class="kpi-label">Ticket Promedio</div><div class="kpi-value text-red" id="insightTicket">$18.400</div><div class="text-sm text-muted mt-4">Gasto por visita</div></div>
+        <div class="kpi-card"><div class="kpi-label">Producto Estrella</div><div class="syne fw-700 mt-4" style="font-size:16px;color:var(--coffee);" id="insightProduct">Tinto Campesino</div><div class="text-sm text-muted mt-4">Por volumen</div></div>
+        <div class="kpi-card"><div class="kpi-label">Tasa de Abandono</div><div class="kpi-value" id="insightChurn">3.2%</div><div class="text-sm text-green mt-4">▼ 0.5% este mes</div></div>
+        <div class="kpi-card"><div class="kpi-label">Pico de Consumo</div><div class="kpi-value" id="insightPeak">9am</div><div class="text-sm text-muted mt-4">Hora de mayor tráfico</div></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-12">Perfil de Valores · Mapa Psicográfico</div><div style="height:280px;"><canvas id="radarChart"></canvas></div></div>
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-4">Preferencia de Canal de Compra</div><div class="card-subtitle">Distribución por canal de compra activo</div><div id="channelRows" style="margin-top:8px;"></div></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-12">Distribución Geográfica</div><div style="height:240px;"><canvas id="territoryChart"></canvas></div></div>
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-4">Intensidad de Consumo por Franja Horaria</div><div class="card-subtitle">Tráfico normalizado por hora del día</div><div style="height:220px;"><canvas id="heatChart"></canvas></div></div>
+      </div>
+
+      <!-- ── AJUSTE 1: tabla dinámica por ciudad de Juan Valdez ── -->
+      <div class="card mb-18">
+        <div class="card-accent"></div>
+        <div class="flex-between mb-12">
+          <div>
+            <div class="card-title">Seguimiento Semanal del Embudo · Juan Valdez</div>
+            <div class="card-subtitle" id="weeklyTableSubtitle">Análisis de tendencia por etapa · 4 semanas consecutivas · Ciudad seleccionada: Bogotá</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <div style="background:var(--red-pale);border:1px solid var(--red-border);border-radius:8px;padding:6px 12px;font-size:11px;font-weight:700;color:var(--red);">Juan Valdez · Q2 2026</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="weekly-table" id="weeklyTable">
+            <thead>
+              <tr><th>Etapa del Embudo</th><th>Semana 1</th><th>Semana 2</th><th>Semana 3</th><th>Semana 4</th><th>Tendencia</th><th>Observación Estratégica</th></tr>
+            </thead>
+            <tbody id="weeklyTableBody"></tbody>
+          </table>
+        </div>
+        <div class="alert-banner gold mt-16" id="weeklyAlert">⚡ <span id="weeklyAlertText">Cargando análisis...</span></div>
+      </div>
+    </div>
+
+    <!-- ══ ANALYTICAL FRAMEWORK ══ -->
+    <div id="instrumentos" style="display:none">
+      <div class="fw-hero">
+        <div class="fw-hero-title">Analytical Framework</div>
+        <div class="fw-hero-sub">Tres pilares metodológicos aplicados al análisis de audiencias de Juan Valdez · Haz clic en cada pilar para explorarlo</div>
+        <div class="fw-flow">
+          <div class="fw-flow-step"><div class="fw-flow-num n3" onclick="openPillar('p3')">3</div><div class="fw-flow-label">Empieza aquí</div><div class="fw-flow-name">Mapeo del Embudo</div></div>
+          <div class="fw-flow-arrow">→</div>
+          <div class="fw-flow-step"><div class="fw-flow-num n2" onclick="openPillar('p2')">2</div><div class="fw-flow-label">Luego</div><div class="fw-flow-name">Análisis Estadístico</div></div>
+          <div class="fw-flow-arrow">→</div>
+          <div class="fw-flow-step"><div class="fw-flow-num n1" onclick="openPillar('p1')">1</div><div class="fw-flow-label">Finalmente</div><div class="fw-flow-name">Perfil Motivacional</div></div>
+        </div>
+        <div class="fw-reversa"><div class="fw-reversa-badge">⟲ Aplicación en reversa: Embudo → Estadística → Motivación</div><span style="font-size:12px;color:rgba(255,255,255,0.4);margin-left:8px;">Primero los datos objetivos, luego el perfil humano</span></div>
+      </div>
+      <div class="pillar-grid">
+        <div class="pillar-card pillar-p1" id="p1"><div class="pillar-header" onclick="togglePillar('p1')"><div class="pillar-num">1</div><span class="pillar-icon">🧠</span><div class="pillar-label">Pilar 1 · Motivación</div><div class="pillar-title">Perfil de Uso y Motivaciones del Consumidor</div><div class="pillar-cta"><span>Explorar</span><span class="pillar-arrow">▶</span></div></div><div class="pillar-body"><div class="pillar-inner"><div class="pillar-desc">Responde: ¿quién es el consumidor, qué lo mueve, qué necesita y cómo se comporta? El análisis parte de los valores heredados, que sostienen las creencias, que a su vez moldean el comportamiento de compra. Las experiencias refuerzan o modifican ese ciclo.</div><div class="pillar-tags"><span class="ptag accent">Valores Centrales</span><span class="ptag">Motivaciones (Ego · Ideología · Coerción · Reward)</span><span class="ptag">Jerarquía de Necesidades</span><span class="ptag">Experiencia de Consumo</span><span class="ptag">Comportamiento Esperado</span></div></div></div></div>
+        <div class="pillar-card pillar-p2" id="p2"><div class="pillar-header" onclick="togglePillar('p2')"><div class="pillar-num">2</div><span class="pillar-icon">📊</span><div class="pillar-label">Pilar 2 · Estadística</div><div class="pillar-title">Análisis Estadístico y Segmentación de Datos</div><div class="pillar-cta"><span>Explorar</span><span class="pillar-arrow">▶</span></div></div><div class="pillar-body"><div class="pillar-inner"><div class="pillar-desc">Corrige los sesgos del análisis motivacional con datos objetivos. El Coeficiente de Variación (CV = Desviación Estándar ÷ Promedio) determina si una audiencia es homogénea o debe segmentarse. CV bajo = campaña masiva. CV alto = segmentación obligatoria.</div><div class="pillar-tags"><span class="ptag accent">CV = SD ÷ Promedio</span><span class="ptag">Promedio · Moda · Mediana</span><span class="ptag">K-Means Clustering</span><span class="ptag">Variabilidad Divergente</span></div></div></div></div>
+        <div class="pillar-card pillar-p3" id="p3"><div class="pillar-header" onclick="togglePillar('p3')"><div class="pillar-num">3</div><span class="pillar-icon">▽</span><div class="pillar-label">Pilar 3 · Embudo</div><div class="pillar-title">Mapeo del Embudo de Conversión y Pérdida</div><div class="pillar-cta"><span>Explorar</span><span class="pillar-arrow">▶</span></div></div><div class="pillar-body"><div class="pillar-inner"><div class="pillar-desc">Cuantifica la pérdida de audiencia en cada etapa del journey. Se construye de arriba hacia abajo y se analiza en reversa: desde la lealtad hacia el alcance. La intención de compra es el nexo entre la motivación (Pilar 1) y el comportamiento real.</div><div class="pillar-tags"><span class="ptag">Alcance → Interés</span><span class="ptag">Intención → Compra</span><span class="ptag accent">Vínculo → Lealtad</span><span class="ptag">Resta de Audiencias</span></div></div></div></div>
+      </div>
+      <div class="fw-subtabs">
+        <button class="fw-subtab active" onclick="showFwTab('engagement',this)">⚡ Vínculo con la Marca</button>
+        <button class="fw-subtab" onclick="showFwTab('cv',this)">📈 Variabilidad y Segmentación</button>
+        <button class="fw-subtab" onclick="showFwTab('sesgos',this)">🪞 Sesgos del Analista</button>
+        <button class="fw-subtab" onclick="showFwTab('ams',this)">🗂 Gestión de Audiencias</button>
+      </div>
+      <div id="fw-engagement" class="fw-subpanel active">
+        <div class="card"><div class="card-accent"></div><div class="flex-between mb-16"><div><div class="card-title">Tipos de Vínculo · Transaccional vs Fidelización</div><div class="card-subtitle">El retorno de la audiencia a la marca se mide a través de un índice compuesto: Experiencia + Frecuencia + Tiempo (UX)</div></div><div style="background:var(--red-pale);border:1px solid var(--red-border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--red);font-weight:700;">Índice Máx. 10 · Umbral JV: ≥7.5 Premium</div></div><div class="eng-visual"><div class="eng-big-card eng-axial-big"><div class="eng-big-emoji">⚡</div><div class="eng-big-tag">Vínculo Transaccional · Puntual</div><div class="eng-big-title">Engagement Transaccional</div><div class="eng-big-desc">Relación <strong>directa y puntual</strong> del usuario con la marca en un momento dado. Ocurre entre la primera compra y la recompra. Es el punto de entrada al ciclo de fidelización.</div><div class="eng-big-example">☕ Ejemplo JV: Un usuario abre la App y compra un Tinto Campesino. Interacción única, medida por score de experiencia y frecuencia.</div></div><div class="eng-big-card eng-trans-big"><div class="eng-big-emoji">🔗</div><div class="eng-big-tag">Vínculo Duradero · Fidelización</div><div class="eng-big-title">Engagement de Fidelización</div><div class="eng-big-desc">Vínculo que <strong>trasciende el tiempo y los canales</strong>. El consumidor mantiene relación emocional con la marca sin requerir estímulo publicitario constante. Objetivo estratégico de largo plazo.</div><div class="eng-big-example">🏆 Ejemplo JV: Cliente de 3 años que recomienda la marca a su red y regresa por convicción. LTV ×3.2.</div></div></div><div class="eng-index-bar"><div class="eng-idx" style="background:var(--red-pale);"><div class="eng-idx-icon">🎯</div><div class="eng-idx-label" style="color:var(--red);">Experiencia</div><div class="eng-idx-desc">Calidad de la interacción con el producto o canal de compra</div></div><div class="eng-idx" style="background:var(--orange-pale);"><div class="eng-idx-icon">🔁</div><div class="eng-idx-label" style="color:var(--orange);">Frecuencia</div><div class="eng-idx-desc">¿Con qué regularidad regresa el consumidor a la marca?</div></div><div class="eng-idx" style="background:var(--green-pale);"><div class="eng-idx-icon">⏱</div><div class="eng-idx-label" style="color:var(--green);">Tiempo en Interfaz</div><div class="eng-idx-desc">¿Cuánto tiempo dedica en App, tienda o plataforma digital?</div></div></div><div class="alert-banner coffee mt-16">📊 <span><strong>Umbral de alerta:</strong> Score &lt; 6.0 indica fatiga de audiencia. Umbral máximo: 10. Objetivo Juan Valdez: ≥ 7.5 para el segmento Premium.</span></div></div>
+      </div>
+      <div id="fw-cv" class="fw-subpanel">
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-4">Coeficiente de Variación · ¿Cuándo segmentar?</div><div class="card-subtitle">CV = Desviación Estándar ÷ Promedio · Determina si una audiencia puede tratarse como homogénea o requiere subdivisión estratégica</div><div class="cv-track"><div class="cv-card cv-card-stable"><div class="cv-value">CV &lt; 0.3</div><div class="cv-name" style="color:var(--green);">🟢 Audiencia Homogénea</div><div class="cv-desc">Comportamiento predecible y uniforme. Se puede comunicar con un único mensaje masivo sin perder efectividad.</div><div style="margin-top:10px;font-size:11px;background:rgba(26,122,74,0.1);border-radius:6px;padding:6px 10px;color:var(--green);font-weight:600;">Acción: Campaña masiva unificada</div><div class="cv-meter"><div class="cv-fill" style="width:25%;background:var(--green);"></div></div></div><div class="cv-card cv-card-variant"><div class="cv-value">0.3 – 0.7</div><div class="cv-name" style="color:var(--orange);">🟡 Audiencia Variante</div><div class="cv-desc">Existen subgrupos diferenciados. La segmentación mejora el retorno. Se recomienda clustering en 2 dimensiones.</div><div style="margin-top:10px;font-size:11px;background:rgba(199,106,26,0.1);border-radius:6px;padding:6px 10px;color:var(--orange);font-weight:600;">Acción: Segmentar con K-Means</div><div class="cv-meter"><div class="cv-fill" style="width:55%;background:var(--orange);"></div></div></div><div class="cv-card cv-card-divergent"><div class="cv-value">CV &gt; 0.7</div><div class="cv-name" style="color:var(--red);">🔴 Audiencia Divergente</div><div class="cv-desc">Datos muy dispersos. No existe un perfil representativo. Clustering en 3 dimensiones obligatorio para extraer valor.</div><div style="margin-top:10px;font-size:11px;background:rgba(158,27,47,0.08);border-radius:6px;padding:6px 10px;color:var(--red);font-weight:600;">Acción: Clustering 3D urgente</div><div class="cv-meter"><div class="cv-fill" style="width:88%;background:var(--red);"></div></div></div></div><div style="background:var(--surface2);border-radius:12px;padding:16px 18px;border:1px solid var(--border);"><div style="font-size:12px;font-weight:700;color:var(--coffee);margin-bottom:10px;">Caso real: Consumo de contenido digital (minutos/día)</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;"><div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Promedio</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--coffee);">45.8</div><div style="font-size:11px;color:var(--text-muted);">min</div></div><div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Desv. Estándar</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--coffee);">38.1</div></div><div style="text-align:center;padding:12px;background:var(--red-pale);border-radius:8px;border:1px solid var(--red-border);"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--red);margin-bottom:4px;">CV</div><div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--red);">0.83</div><div style="font-size:11px;color:var(--red);font-weight:700;">Divergente</div></div><div style="text-align:center;padding:12px;background:var(--surface);border-radius:8px;border:1px solid var(--border);"><div style="font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Conclusión</div><div style="font-size:12px;color:var(--coffee);font-weight:600;margin-top:4px;">Clustering 3D obligatorio</div></div></div></div></div>
+      </div>
+      <div id="fw-sesgos" class="fw-subpanel">
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-4">Sesgos del Analista · Control de Calidad del Análisis</div><div class="card-subtitle">Los sesgos cognitivos distorsionan la interpretación de datos. Identificarlos activamente es condición necesaria para producir análisis confiables.</div><div class="sesgo-big-grid"><div class="sesgo-big sesgo-big-1"><span class="sesgo-big-emoji">🪞</span><div class="sesgo-big-name">Sesgo de Confirmación</div><div class="sesgo-big-desc">El analista prioriza inconscientemente los datos que validan su hipótesis inicial, descartando evidencia contradictoria que podría ser más relevante.</div><div class="sesgo-big-ex">⚠️ JV: Asumir que todos los jóvenes compran por App sin revisar que el 68% prefiere la tienda física.</div><div class="sesgo-risk"><span class="sesgo-risk-label">Impacto</span><div class="sesgo-dots"><div class="sdot on-orange"></div><div class="sdot on-orange"></div><div class="sdot on-orange"></div><div class="sdot on-orange"></div><div class="sdot"></div></div></div></div><div class="sesgo-big sesgo-big-2"><span class="sesgo-big-emoji">🎣</span><div class="sesgo-big-name">Sesgo de Enganche</div><div class="sesgo-big-desc">Una métrica llamativa captura toda la atención del analista, quien pierde perspectiva del comportamiento global de la audiencia.</div><div class="sesgo-big-ex">⚠️ JV: Diseñar toda la estrategia alrededor de un post viral en TikTok, ignorando la caída del 37.5% en interés activo.</div><div class="sesgo-risk"><span class="sesgo-risk-label">Impacto</span><div class="sesgo-dots"><div class="sdot on-red"></div><div class="sdot on-red"></div><div class="sdot on-red"></div><div class="sdot"></div><div class="sdot"></div></div></div></div><div class="sesgo-big sesgo-big-3"><span class="sesgo-big-emoji">🎭</span><div class="sesgo-big-name">Sesgo de Proyección</div><div class="sesgo-big-desc">El analista extrapola sus propias preferencias hacia la audiencia. El análisis motivacional resulta contaminado por percepciones personales no fundamentadas en datos.</div><div class="sesgo-big-ex">⚠️ JV: Diseñar campañas basadas en "yo tomaría esto" en lugar de los datos reales del segmento Premium.</div><div class="sesgo-risk"><span class="sesgo-risk-label">Impacto</span><div class="sesgo-dots"><div class="sdot on-orange"></div><div class="sdot on-orange"></div><div class="sdot on-orange"></div><div class="sdot on-orange"></div><div class="sdot"></div></div></div></div></div><div class="alert-banner coffee mt-16">🧠 <span><strong>Regla de oro:</strong> El análisis estadístico objetivo (Pilar 2) debe ejecutarse antes del análisis motivacional (Pilar 1). Los datos corrigen los sesgos humanos. Nunca interpretar motivaciones sin haber validado primero la variabilidad de los datos.</span></div></div>
+      </div>
+      <div id="fw-ams" class="fw-subpanel">
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-4">Gestión Estratégica de Audiencias · Cuatro Cuadrantes</div><div class="card-subtitle">Clasificación de audiencias según dos dimensiones: identidad conocida vs desconocida · fuente interna vs externa. Define qué herramientas usar en cada caso.</div><div class="ams-axes"><div class="ams-axis-label">Audiencia Desconocida</div><div class="ams-axis-arrow"></div><div class="ams-axis-label">Audiencia Conocida</div></div><div class="ams-matrix"><div class="ams-cell ams-cell-ue"><div class="ams-cell-header"><div class="ams-cell-icon">🌐</div><div><span class="ams-cell-badge">Desconocida · Externa</span></div></div><div class="ams-cell-title">Prospectos no identificados fuera de canales propios</div><div><span class="ams-tool">🎯 Pauta programática</span><span class="ams-tool">🤖 Audiencias lookalike</span><span class="ams-tool">📊 Datos de terceros</span><span class="ams-tool">🍪 Gestores de datos (DMP)</span></div></div><div class="ams-cell ams-cell-ui"><div class="ams-cell-header"><div class="ams-cell-icon">🏠</div><div><span class="ams-cell-badge">Desconocida · Interna</span></div></div><div class="ams-cell-title">Visitantes anónimos de canales propios (web/app)</div><div><span class="ams-tool">📈 Analytics web</span><span class="ams-tool">☁️ Plataformas de marketing</span><span class="ams-tool">🗄 CDP propio</span><span class="ams-tool">🌐 Comportamiento en sitio</span></div></div><div class="ams-cell ams-cell-ke"><div class="ams-cell-header"><div class="ams-cell-icon">🔍</div><div><span class="ams-cell-badge">Conocida · Externa</span></div></div><div class="ams-cell-title">Consumidores identificados fuera del ecosistema propio</div><div><span class="ams-tool">🕵️ Inteligencia de mercado</span><span class="ams-tool">💬 Escucha social</span><span class="ams-tool">📧 Enriquecimiento de datos</span><span class="ams-tool">📞 Contacto directo</span></div></div><div class="ams-cell ams-cell-ki"><div class="ams-cell-header"><div class="ams-cell-icon">💎</div><div><span class="ams-cell-badge">Conocida · Interna · Meta</span></div></div><div class="ams-cell-title">Base de clientes identificados en canales propios · CRM</div><div><span class="ams-tool">👥 CRM</span><span class="ams-tool">📱 Atribución mobile</span><span class="ams-tool">🗃 CDP integrado</span><span class="ams-tool">📊 Analytics propias</span></div></div></div><div class="alert-banner green mt-16">✅ <span><strong>Juan Valdez hoy:</strong> Los 152,430 consumidores del dashboard residen en el cuadrante <strong>Conocida/Interna (CRM)</strong>. Las plataformas de pauta digital atacan el cuadrante Desconocida/Externa. El objetivo estratégico es migrar audiencias de Externa hacia Interna de forma permanente.</span></div></div>
+      </div>
+    </div>
+
+    <!-- ══ AUDIENCE CATALOG ══ -->
+    <div id="audiencias" style="display:none">
+      <div class="section-title mb-4">Audience Catalog</div>
+      <div class="section-sub">Gestión de segmentos activos y simulación de alcance estratégico</div>
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="showCatalogSection('simulador',this)">Scenario Simulator</button>
+        <button class="tab-btn" onclick="showCatalogSection('biblioteca',this)">Audience Library</button>
+        <button class="tab-btn" onclick="showCatalogSection('segmentacion',this)">¿Cómo se segmenta?</button>
+      </div>
+      <div id="simulador-section">
+        <div class="flex-between mb-18">
+          <div><div class="syne fw-700" style="font-size:16px;color:var(--coffee);">Scenario Simulator</div><div class="text-sm text-muted mt-4">Proyección de impacto por configuración de segmento · Índice compuesto = Experiencia + Frecuencia + Tiempo</div></div>
+          <select class="field-select" id="targetAudience" onchange="updateEngagement()">
+            <option value="lovers">Coffee Lovers (Premium)</option>
+            <option value="digital">Digital Nomads</option>
+            <option value="office">Office Workers (After-office)</option>
+            <option value="genz">Generation Z</option>
+          </select>
+        </div>
+        <div class="grid-2 mb-18">
+          <div class="card"><div class="card-accent"></div><div class="card-title mb-16">Variables del Índice de Vínculo</div><div class="slider-group"><label>Experiencia (UX/UI) <span id="valUx">6</span></label><input type="range" min="1" max="10" value="6" id="ux" oninput="updateEngagement()"></div><div class="slider-group"><label>Frecuencia de Compra <span id="valFreq">5</span></label><input type="range" min="1" max="10" value="5" id="freq" oninput="updateEngagement()"></div><div class="slider-group"><label>Tiempo en Interfaz <span id="valTime">6</span></label><input type="range" min="1" max="10" value="6" id="time" oninput="updateEngagement()"></div></div>
+          <div class="card"><div class="card-accent"></div><div class="card-title mb-12">Desempeño Histórico del Segmento</div><div style="height:200px;"><canvas id="historyChart"></canvas></div></div>
+        </div>
+        <div class="sim-result">
+          <div class="sim-result-grid">
+            <div class="sim-metric"><div class="sim-metric-label">Alcance Estimado</div><div class="sim-metric-val" id="reachVal">450k</div></div>
+            <div class="sim-metric"><div class="sim-metric-label">Índice de Vínculo</div><div class="sim-metric-val text-red" id="indiceVal">5.6</div></div>
+            <div class="sim-metric"><div class="sim-metric-label">Conv. Proyectada</div><div class="sim-metric-val" id="convPred">34%</div></div>
+            <div class="sim-metric"><div class="sim-metric-val text-green" id="revenueImpact">+$1.2M</div><div class="sim-metric-label">Impacto en Revenue</div></div>
+          </div>
+          <div class="sim-narrative" id="simNarrative">Ajusta las variables para ver el escenario proyectado.</div>
+        </div>
+        <div class="alert-banner mt-16" id="engagementAlert">⚠️ <span>Línea punteada = promedio histórico del segmento. Umbral de alerta: Índice &lt; 6.0</span></div>
+      </div>
+      <div id="biblioteca-section" style="display:none">
+        <div class="flex-between mb-16"><div><div class="syne fw-700" style="font-size:16px;color:var(--coffee);">Audience Library</div><div class="text-sm text-muted mt-4">150 consumidores perfilados · Modelo de motivación aplicado · MBTI + Motivaciones + Necesidades dominantes</div></div><input type="text" class="search-input" id="searchUser" placeholder="Buscar por ID o segmento..." onkeyup="filterUsers()"></div>
+        <div class="card"><div class="card-accent"></div><div style="max-height:480px;overflow-y:auto;"><table class="data-table"><thead><tr><th>ID Consumidor</th><th>Segmento</th><th>Valor</th><th>Estado</th><th>Última Compra</th><th>Ticket Prom.</th><th>Score</th><th>Acción</th></tr></thead><tbody id="userTableBody"></tbody></table></div></div>
+      </div>
+      <div id="segmentacion-section" style="display:none">
+        <div class="card mb-18"><div class="card-accent"></div><div class="card-title mb-4">¿Por qué y cómo se generan estos 4 segmentos?</div><div class="card-subtitle">La segmentación no es arbitraria: responde a diferencias estadísticamente significativas en comportamiento de compra, motivaciones y relación con la marca.</div><div style="background:linear-gradient(135deg,var(--coffee),#5c2e28);border-radius:12px;padding:20px 24px;color:#fff;margin-bottom:18px;"><div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:rgba(255,255,255,0.6);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;">Proceso de Segmentación</div><div style="display:flex;gap:0;position:relative;"><div style="flex:1;text-align:center;padding:0 10px;"><div style="width:38px;height:38px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">1</div><div style="font-size:11.5px;font-weight:700;color:#fff;margin-bottom:4px;">Recolección</div><div style="font-size:11px;color:rgba(255,255,255,0.55);">Datos de transacciones, App y CRM</div></div><div style="color:rgba(255,255,255,0.25);font-size:20px;padding-top:6px;">→</div><div style="flex:1;text-align:center;padding:0 10px;"><div style="width:38px;height:38px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">2</div><div style="font-size:11.5px;font-weight:700;color:#fff;margin-bottom:4px;">Análisis CV</div><div style="font-size:11px;color:rgba(255,255,255,0.55);">CV &gt; 0.7 → segmentación obligatoria</div></div><div style="color:rgba(255,255,255,0.25);font-size:20px;padding-top:6px;">→</div><div style="flex:1;text-align:center;padding:0 10px;"><div style="width:38px;height:38px;background:rgba(255,255,255,0.12);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">3</div><div style="font-size:11.5px;font-weight:700;color:#fff;margin-bottom:4px;">K-Means</div><div style="font-size:11px;color:rgba(255,255,255,0.55);">Agrupamiento por frecuencia y ticket</div></div><div style="color:rgba(255,255,255,0.25);font-size:20px;padding-top:6px;">→</div><div style="flex:1;text-align:center;padding:0 10px;"><div style="width:38px;height:38px;background:rgba(201,146,42,0.4);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">4</div><div style="font-size:11.5px;font-weight:700;color:#fff;margin-bottom:4px;">Perfilamiento</div><div style="font-size:11px;color:rgba(255,255,255,0.55);">Motivaciones + valores por segmento</div></div></div></div><div class="grid-2"><div><div style="font-size:13px;font-weight:700;color:var(--coffee);margin-bottom:12px;">¿Por qué 4 segmentos?</div><div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--text-mid);line-height:1.65;"><p>La audiencia de Juan Valdez presenta un CV &gt; 0.7 en las variables clave de ticket promedio y frecuencia de compra, lo que la clasifica como <strong>divergente</strong>. Esto hace inviable tratar a todos los consumidores con un único mensaje o producto.</p><p>El algoritmo K-Means identifica 4 centroides estadísticamente separados: cada grupo tiene comportamiento de compra internamente similar y marcadamente diferente entre sí.</p><p>Tener grupos más granulares (6-8) aumenta la precisión pero reduce el volumen por segmento, haciendo ineficiente la inversión publicitaria. 4 segmentos representa el equilibrio óptimo entre especificidad y escala.</p></div></div><div><div style="font-size:13px;font-weight:700;color:var(--coffee);margin-bottom:12px;">Valor estratégico de cada segmento</div><div style="display:flex;flex-direction:column;gap:8px;"><div style="background:var(--red-pale);border-radius:10px;padding:12px;border-left:3px solid var(--red);"><div style="font-size:12px;font-weight:700;color:var(--red);">Premium · 28%</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Mayor LTV. Estrategia de retención. No adquisición.</div></div><div style="background:var(--orange-pale);border-radius:10px;padding:12px;border-left:3px solid var(--gold);"><div style="font-size:12px;font-weight:700;color:var(--gold);">Office Workers · 22%</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Mayor ticket por visita (compra grupal). Escalar combos.</div></div><div style="background:var(--green-pale);border-radius:10px;padding:12px;border-left:3px solid var(--green);"><div style="font-size:12px;font-weight:700;color:var(--green);">Gen Z · 24%</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Mayor volumen. Gamificar retención. Churn controlable.</div></div><div style="background:#f3ede8;border-radius:10px;padding:12px;border-left:3px solid var(--coffee-mid);"><div style="font-size:12px;font-weight:700;color:var(--coffee-mid);">Digital Nomads · 14%</div><div style="font-size:11.5px;color:var(--text-mid);margin-top:3px;">Sensibles al UX. Prioridad: reducir fricción en App.</div></div></div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══ FUNNEL ══ -->
+    <div id="funnel" style="display:none">
+      <div class="section-title mb-4">Conversion Funnel</div>
+      <div class="section-sub">Journey completo del consumidor Juan Valdez · Análisis de pérdida por etapa y oportunidades de intervención</div>
+      <div class="grid-2 mb-18">
+        <div class="card"><div class="card-accent"></div><div class="card-title mb-16">Journey del Consumidor · Análisis de Pérdida</div><div class="funnel-stage"><div class="funnel-stage-color" style="background:var(--coffee);"></div><div style="flex:1;"><div class="funnel-stage-label">① Alcance y Descubrimiento</div><div style="font-size:12px;color:var(--text-muted);">Publicidad, referidos, visibilidad en calle y medios digitales</div><div class="funnel-bar"><div class="funnel-bar-fill" style="width:100%;background:var(--coffee);"></div></div></div><div class="funnel-stage-stats"><div class="funnel-users">152,430</div><div class="funnel-pct">100%</div></div></div><div class="funnel-drop"><div class="funnel-drop-line"></div><span class="funnel-drop-badge drop-moderate">▼ −36% · Baja captación App</span><div class="funnel-drop-line"></div></div><div class="funnel-stage"><div class="funnel-stage-color" style="background:#7c3d38;"></div><div style="flex:1;"><div class="funnel-stage-label">② Interés Activo</div><div style="font-size:12px;color:var(--text-muted);">El consumidor busca activamente información. Va más allá de la simple recordación.</div><div class="funnel-bar"><div class="funnel-bar-fill" style="width:64%;background:#7c3d38;"></div></div></div><div class="funnel-stage-stats"><div class="funnel-users">97,555</div><div class="funnel-pct">64%</div></div></div><div class="funnel-drop"><div class="funnel-drop-line"></div><span class="funnel-drop-badge drop-critical">▼ −45% · Fricción en checkout App</span><div class="funnel-drop-line"></div></div><div class="funnel-stage"><div class="funnel-stage-color" style="background:var(--gold);"></div><div style="flex:1;"><div class="funnel-stage-label">③ Intención de Compra</div><div style="font-size:12px;color:var(--text-muted);">Acción concreta: visita tienda, abre App, agrega al carrito. Motivación activa.</div><div class="funnel-bar"><div class="funnel-bar-fill" style="width:45%;background:var(--gold);"></div></div></div><div class="funnel-stage-stats"><div class="funnel-users">53,650</div><div class="funnel-pct">35%</div></div></div><div class="funnel-drop"><div class="funnel-drop-line"></div><span class="funnel-drop-badge drop-moderate">▼ −42% · Sin programa de retención</span><div class="funnel-drop-line"></div></div><div class="funnel-stage"><div class="funnel-stage-color" style="background:var(--red);"></div><div style="flex:1;"><div class="funnel-stage-label">④ Primera Transacción</div><div style="font-size:12px;color:var(--text-muted);">Comportamiento completado. El consumidor realiza su primera compra.</div><div class="funnel-bar"><div class="funnel-bar-fill" style="width:25%;background:var(--red);"></div></div></div><div class="funnel-stage-stats"><div class="funnel-users">31,117</div><div class="funnel-pct">20%</div></div></div><div class="funnel-drop"><div class="funnel-drop-line"></div><span class="funnel-drop-badge drop-low">▼ −41% · Alto potencial de mejora</span><div class="funnel-drop-line"></div></div><div class="funnel-stage"><div class="funnel-stage-color" style="background:var(--green);"></div><div style="flex:1;"><div class="funnel-stage-label">⑤ Vínculo, Lealtad y Recomendación</div><div style="font-size:12px;color:var(--text-muted);">Vínculo transaccional → fidelización duradera. LTV ×3.2 respecto al promedio.</div><div class="funnel-bar"><div class="funnel-bar-fill" style="width:12%;background:var(--green);"></div></div></div><div class="funnel-stage-stats"><div class="funnel-users">18,291</div><div class="funnel-pct">LTV×3.2</div></div></div></div>
+        <div style="display:flex;flex-direction:column;gap:14px;"><div class="card"><div class="card-accent"></div><div class="card-title mb-12">Análisis Diferencial · Proceso Metodológico</div><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"><div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:10px 14px;border:1px solid var(--border);"><div style="width:24px;height:24px;background:var(--coffee);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">1</div><div style="font-size:12.5px;color:var(--text-mid);">Mapear las etapas y cuantificar la pérdida de audiencia por fase</div></div><div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:10px 14px;border:1px solid var(--border);"><div style="width:24px;height:24px;background:var(--coffee-mid);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">2</div><div style="font-size:12.5px;color:var(--text-mid);">Perfil diferencial: comparar desde la lealtad hacia el alcance (lectura inversa)</div></div><div style="display:flex;align-items:center;gap:12px;background:var(--surface2);border-radius:8px;padding:10px 14px;border:1px solid var(--border);"><div style="width:24px;height:24px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">3</div><div style="font-size:12.5px;color:var(--text-mid);">Segmentar con datos estadísticos: clustering por comportamiento de consumo</div></div><div style="display:flex;align-items:center;gap:12px;background:var(--red-pale);border-radius:8px;padding:10px 14px;border:1px solid var(--red-border);"><div style="width:24px;height:24px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0;">4</div><div style="font-size:12.5px;color:var(--red);">Perfilar cada segmento: motivaciones, valores y necesidades dominantes</div></div></div></div><div class="card"><div class="card-accent"></div><div class="card-title mb-12">Brecha de Oportunidad por Etapa</div><div style="height:200px;"><canvas id="funnelChart"></canvas></div></div><div class="rec-block" style="margin-bottom:0;"><div class="rec-block-title" style="font-size:11px;">🎯 Intervenciones Prioritarias</div><div style="display:flex;flex-direction:column;gap:8px;"><div class="rec-item"><span class="rec-item-tag urgent">Crítico</span><p style="font-size:12px;">Rediseñar flujo de pago en App: 3 pasos → 1 tap. Impacto estimado: +$850K/mes.</p></div><div class="rec-item"><span class="rec-item-tag high">Alta Prior.</span><p style="font-size:12px;">Activar programa de puntos por taza → +38% en recompra. Migra el vínculo de transaccional a duradero.</p></div></div></div></div>
+      </div>
+    </div>
+
+    <!-- ══ MEDIA PORTFOLIO ══ -->
+    <div id="portafolio" style="display:none">
+      <div class="section-title mb-4">Media Portfolio · Mercado Publicitario</div>
+      <div class="section-sub">Gestión de inversión publicitaria y desempeño por ciudad · 4 actores del ecosistema de medios</div>
+      <div class="grid-4 mb-18">
+        <div class="monetize-actor"><div class="actor-icon">📣</div><div class="actor-name">① Anunciante</div><div class="actor-desc">Empresa que invierte en publicidad. Gana por retorno de inversión. Juan Valdez en este rol.</div></div>
+        <div class="monetize-actor"><div class="actor-icon">📰</div><div class="actor-name">② Publisher</div><div class="actor-desc">Quien vende la pauta y comercializa el espacio publicitario. El actor más relevante del mercado.</div></div>
+        <div class="monetize-actor"><div class="actor-icon">🔄</div><div class="actor-name">③ Intermediario</div><div class="actor-desc">Agencias que operan la inversión. Conectan al anunciante con el publisher y optimizan el portafolio.</div></div>
+        <div class="monetize-actor"><div class="actor-icon">👥</div><div class="actor-name">④ Audiencia</div><div class="actor-desc">El activo más valioso. Su tiempo se comercializa. El embudo calcula el costo de cada etapa de atención.</div></div>
+      </div>
+      <div class="formula-box mb-18">
+        <div class="formula-title">Fórmula de Monetización de Medios</div>
+        <div class="formula-eq"><span>$ por banner</span> × <span>Banners/página</span> × <span>Páginas/visita</span> × <span>Visitas/usuario</span> × <span>Usuarios</span></div>
+        <div class="formula-result">Ejemplo: $1 · 3 banners/página · 10 páginas/visita · 4 visitas/mes · 1 usuario = <strong>$120 USD/usuario/mes</strong></div>
+      </div>
+      <div class="kpi-grid mb-18">
+        <div class="kpi-card"><div class="kpi-label">Presupuesto Total</div><div class="kpi-value">$200M</div><div class="text-sm text-muted mt-4">COP asignado Q2</div></div>
+        <div class="kpi-card"><div class="kpi-label">ROI Esperado</div><div class="kpi-value text-red" id="roiVal">18%</div><div class="text-sm text-green mt-4">▲ vs benchmark 14%</div></div>
+        <div class="kpi-card"><div class="kpi-label">Índice de Vínculo Proyectado</div><div class="kpi-value" id="engProj">7.4</div><div class="text-sm text-muted mt-4">/10 índice compuesto</div></div>
+        <div class="kpi-card"><div class="kpi-label">Nivel de Riesgo</div><div class="kpi-value syne" id="riskVal" style="font-size:18px;">Medio</div></div>
+      </div>
+      <div class="grid-2 mb-18">
+        <div class="card">
+          <div class="card-accent"></div>
+          <div class="card-title mb-16">Distribución de Inversión por Ciudad</div>
+          <div class="slider-group"><label>Bogotá <span id="vB">40</span>%</label><input type="range" id="invB" value="40" min="0" max="100" oninput="updatePortfolio()"></div>
+          <div class="slider-group"><label>Medellín <span id="vM">30</span>%</label><input type="range" id="invM" value="30" min="0" max="100" oninput="updatePortfolio()"></div>
+          <div class="slider-group"><label>Cali <span id="vC">30</span>%</label><input type="range" id="invC" value="30" min="0" max="100" oninput="updatePortfolio()"></div>
+          <div class="flex-between mt-16" style="padding-top:14px;border-top:1px solid var(--border);">
+            <span class="text-sm text-muted">Total asignado:</span>
+            <span class="syne fw-700" style="font-size:18px;" id="totalInv">100%</span>
+          </div>
+          <div class="alert-banner gold mt-12" id="portfolioAlert">📊 <span>Ajusta los sliders para redistribuir la inversión y ver el impacto en ROI y riesgo.</span></div>
         </div>
 
-        <div id="audiencias" style="display:none"> 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 style="margin:0; color:var(--jv-coffee);">Simulador de Configuración Meta</h2>
-                <select class="insight-filter" id="targetAudience" onchange="updateEngagement()">
-                    <option value="lovers">Coffee Lovers (Premium)</option>
-                    <option value="digital">Nómadas Digitales</option>
-                    <option value="office">Oficinistas (After-office)</option>
-                </select>
-            </div>
-            <div class="grid-2"> 
-                <div class="card"> 
-                    <h3>Variables de Engagement</h3> 
-                    <div class="slider-group">
-                        <label>User Experience (UX) <span id="valUx" style="float:right; color:var(--jv-red)">6</span></label>
-                        <input type="range" min="1" max="10" value="6" id="ux" class="slider" oninput="updateEngagement()">
-                    </div> 
-                    <div class="slider-group">
-                        <label>Frecuencia de Compra <span id="valFreq" style="float:right; color:var(--jv-red)">5</span></label>
-                        <input type="range" min="1" max="10" value="5" id="freq" class="slider" oninput="updateEngagement()">
-                    </div> 
-                    <div class="slider-group">
-                        <label>Relevancia de Contenido <span id="valTime" style="float:right; color:var(--jv-red)">6</span></label>
-                        <input type="range" min="1" max="10" value="6" id="time" class="slider" oninput="updateEngagement()">
-                    </div> 
-                    <div style="display:flex; justify-content: space-around; text-align: center; margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
-                        <div><div class="kpi-title">Alcance Est.</div><div class="kpi-value" id="reachVal" style="font-size:18px">450k</div></div>
-                        <div><div class="kpi-title">Score Final</div><div id="indiceVal" style="color:var(--jv-red); font-size:24px; font-weight:800;">5.6</div></div>
-                    </div>
-                </div> 
-                <div class="card"> 
-                    <h3>Comportamiento Histórico Dinámico</h3> 
-                    <div style="height: 250px;"><canvas id="historyChart"></canvas></div> 
-                    <div class="alert-box" id="engagementAlert">⚠️ Línea punteada = Promedio histórico del segmento seleccionado.</div> 
-                </div> 
-            </div> 
-        </div> 
+        <!-- ── AJUSTE 2: tabla de desempeño por ciudad totalmente reactiva ── -->
+        <div class="card">
+          <div class="card-accent"></div>
+          <div class="card-title mb-16">Matriz de Desempeño por Ciudad</div>
+          <table class="data-table">
+            <thead><tr><th>Ciudad</th><th>Inversión</th><th>ROI Est.</th><th>Índice Vínculo</th><th>Riesgo</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span style="color:var(--red);">●</span> <strong>Bogotá</strong></td>
+                <td id="tB">40%</td>
+                <td id="roiB" class="fw-700">22%</td>
+                <td id="eB">8.2</td>
+                <td id="riskB"><span class="status-ind s-warning"><span class="status-dot"></span>Medio</span></td>
+              </tr>
+              <tr>
+                <td><span style="color:var(--gold);">●</span> <strong>Medellín</strong></td>
+                <td id="tM">30%</td>
+                <td id="roiM" class="fw-700">18%</td>
+                <td id="eM">7.5</td>
+                <td id="riskM"><span class="status-ind s-active"><span class="status-dot"></span>Bajo</span></td>
+              </tr>
+              <tr>
+                <td><span style="color:var(--coffee-mid);">●</span> <strong>Cali</strong></td>
+                <td id="tC">30%</td>
+                <td id="roiC" class="fw-700">14%</td>
+                <td id="eC">6.8</td>
+                <td id="riskC"><span class="status-ind s-alert"><span class="status-dot"></span>Alto</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="alert-banner coffee mt-16" id="cityMatrixAlert">🗺️ <span><strong>Medellín:</strong> menor saturación publicitaria + alto índice de vínculo Premium. Se recomienda +15% de inversión (Sharpe Ratio favorable frente a Bogotá).</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-accent"></div>
+        <div class="card-title mb-12">Índice de Consumo Regional · Benchmarking Sectorial</div>
+        <div style="height:200px;"><canvas id="portfolioChart"></canvas></div>
+      </div>
+    </div>
 
-        <div id="funnel" style="display:none"> 
-            <div class="grid-2"> 
-                <div class="card"><h3>Oportunidad de Acción (Gap Analysis)</h3><div style="height: 350px;"><canvas id="funnelChart"></canvas></div></div> 
-                <div class="card"> 
-                    <h3>Análisis de Fuga de Usuarios</h3> 
-                    <table> 
-                        <tr><th>Etapa</th><th>Conversión</th><th>Acción Recom.</th></tr> 
-                        <tr><td>Interest → Intention</td><td style="color:red; font-weight:bold;">18%</td><td>Retargeting agresivo</td></tr> 
-                        <tr><td>Intention → Behavior</td><td style="color:orange; font-weight:bold;">45%</td><td>Optimizar Checkout</td></tr> 
-                        <tr><td>Loyalty → Advocacy</td><td style="color:green; font-weight:bold;">60%</td><td>Programa Referidos</td></tr> 
-                    </table> 
-                </div> 
-            </div> 
-        </div> 
+    <!-- ══ PERFORMANCE MONITOR ══ -->
+    <div id="tablero" style="display:none">
+      <div class="section-title mb-4">Performance Monitor</div>
+      <div class="section-sub">Monitoreo de inversión publicitaria en tiempo real · Anunciante → Intermediario → Publisher → Audiencia</div>
+      <div class="kpi-grid mb-18">
+        <div class="kpi-card"><div class="kpi-label">Inversión Ejecutada</div><div class="kpi-value">$87.0M</div><span class="kpi-delta neutral">vs $200M presupuesto</span></div>
+        <div class="kpi-card"><div class="kpi-label">Canales Activos</div><div class="kpi-value">4</div><span class="kpi-delta up">Meta · Google · TikTok · LN</span></div>
+        <div class="kpi-card"><div class="kpi-label">Alertas Activas</div><div class="kpi-value text-red">3</div><span class="kpi-delta down">2 críticas · 1 warning</span></div>
+        <div class="kpi-card"><div class="kpi-label">ROAS Global</div><div class="kpi-value">4.2×</div><span class="kpi-delta up">▲ sobre target 4.0×</span></div>
+      </div>
+      <div class="card mb-18"><div class="card-accent"></div><div class="card-title mb-16">Seguimiento de Inversión por Canal · Tiempo Real</div><table class="data-table"><thead><tr><th>Plataforma</th><th>Presupuesto</th><th>Inversión Acumulada</th><th>Ejecución</th><th>Gasto Diario</th><th>ROAS</th><th>Estado</th><th>Alerta</th></tr></thead><tbody><tr><td><strong>Meta Ads</strong><br><span class="text-xs text-muted">Facebook + Instagram</span></td><td>$10.0M</td><td class="fw-700">$18.96M <span style="color:var(--red);font-size:11px;">+89.6%</span></td><td><div class="tracker-bar" style="width:100px;"><div class="tracker-fill" style="width:100%;background:var(--red);"></div></div></td><td>$870</td><td class="text-green fw-700">5.1×</td><td><span class="status-ind s-alert"><span class="status-dot"></span>Overspend</span></td><td><span style="font-size:11px;background:var(--red-pale);color:var(--red);padding:3px 8px;border-radius:6px;font-weight:700;">Revisión urgente</span></td></tr><tr><td><strong>Google Ads</strong><br><span class="text-xs text-muted">Search + Display</span></td><td>$2.0M</td><td class="fw-700">$5.94M <span style="color:var(--red);font-size:11px;">+197%</span></td><td><div class="tracker-bar" style="width:100px;"><div class="tracker-fill" style="width:100%;background:var(--gold);"></div></div></td><td>$540</td><td class="fw-700" style="color:var(--orange);">3.8×</td><td><span class="status-ind s-warning"><span class="status-dot"></span>Warning</span></td><td><span style="font-size:11px;background:var(--orange-pale);color:var(--orange);padding:3px 8px;border-radius:6px;font-weight:700;">Ajustar límites</span></td></tr><tr><td><strong>TikTok Ads</strong><br><span class="text-xs text-muted">In-Feed + TopView</span></td><td>$54K</td><td class="fw-700">$22.1M <span style="color:var(--red);font-size:11px;">Anomalía</span></td><td><div class="tracker-bar" style="width:100px;"><div class="tracker-fill" style="width:100%;background:#ef4444;"></div></div></td><td>$1,240</td><td class="text-green fw-700">6.2×</td><td><span class="status-ind s-alert"><span class="status-dot"></span>Crítico</span></td><td><span style="font-size:11px;background:var(--red-pale);color:var(--red);padding:3px 8px;border-radius:6px;font-weight:700;">Error de datos</span></td></tr><tr><td><strong>LinkedIn Ads</strong><br><span class="text-xs text-muted">Sponsored Content</span></td><td>$40K</td><td class="fw-700">$40K <span style="color:var(--green);font-size:11px;">100%</span></td><td><div class="tracker-bar" style="width:100px;"><div class="tracker-fill" style="width:100%;background:var(--green);"></div></div></td><td>$954</td><td class="fw-700" style="color:var(--orange);">2.4×</td><td><span class="status-ind s-active"><span class="status-dot"></span>Normal</span></td><td><span style="font-size:11px;background:var(--green-pale);color:var(--green);padding:3px 8px;border-radius:6px;font-weight:700;">En objetivo</span></td></tr></tbody></table></div>
+      <div class="grid-2"><div class="card"><div class="card-accent"></div><div class="card-title mb-12">ROAS por Canal · Comparativa vs Target</div><div style="height:220px;"><canvas id="tableroChart"></canvas></div></div><div class="card"><div class="card-accent"></div><div class="card-title mb-12">Alertas del Sistema</div><div style="display:flex;flex-direction:column;gap:10px;"><div class="alert-banner">🚨 <div><strong>Meta Ads — Overspend:</strong> Inversión supera presupuesto en $8.96M. Revisar caps diarios de inmediato.</div></div><div class="alert-banner">🚨 <div><strong>TikTok Ads — Anomalía:</strong> $22.1M vs presupuesto $54K. Posible fraude de clics o error de atribución.</div></div><div class="alert-banner gold">⚠️ <div><strong>Google Ads — Warning:</strong> Gasto +197% sobre presupuesto. ROAS 3.8× bajo objetivo. Revisar estrategia de palabras clave.</div></div><div class="alert-banner green">✅ <div><strong>LinkedIn Ads — Normal:</strong> Inversión en objetivo. Audiencia B2B con alto engagement. Considerar incremento controlado.</div></div></div></div></div>
+    </div>
 
-        <div id="portafolio" style="display:none"> 
-            <div class="kpi-container"> 
-                <div class="card"><div class="kpi-title">Presupuesto Total</div><div class="kpi-value">$200M</div></div> 
-                <div class="card"><div class="kpi-title">ROI Estimado</div><div class="kpi-value" id="roiVal">18%</div></div> 
-                <div class="card"><div class="kpi-title">Engagement Proyectado</div><div class="kpi-value" id="engProj">7.4</div></div> 
-                <div class="card"><div class="kpi-title">Riesgo Promedio</div><div class="kpi-value" id="riskVal" style="color:var(--jv-coffee)">Medio</div></div> 
-            </div> 
-            <div class="grid-2"> 
-                <div class="card"> 
-                    <h3>Asignación de Inversión</h3> 
-                    <div class="slider-group"><label>Bogotá (%)</label><input type="range" id="invB" class="slider" value="40" oninput="updatePortfolio()"></div> 
-                    <div class="slider-group"><label>Medellín (%)</label><input type="range" id="invM" class="slider" value="30" oninput="updatePortfolio()"></div> 
-                    <div class="slider-group"><label>Cali (%)</label><input type="range" id="invC" class="slider" value="30" oninput="updatePortfolio()"></div> 
-                    <p>Total asignado: <span id="totalInv" style="font-weight:700">100%</span></p> 
-                </div> 
-                <div class="card"> 
-                    <h3>Portafolio de Audiencias Activo</h3> 
-                    <table> 
-                        <thead><tr><th>Ciudad</th><th>Inversión %</th><th>Engagement</th><th>Riesgo</th></tr></thead> 
-                        <tbody> 
-                            <tr><td><span style="color:red">●</span> Bogotá</td><td id="tB">40%</td><td id="eB">8.2</td><td id="rB">Medio</td></tr> 
-                            <tr><td><span style="color:orange">●</span> Medellín</td><td id="tM">30%</td><td id="eM">7.5</td><td id="rM">Bajo</td></tr> 
-                            <tr><td><span style="color:brown">●</span> Cali</td><td id="tC">30%</td><td id="eC">6.8</td><td id="rC">Alto</td></tr> 
-                        </tbody> 
-                    </table> 
-                </div> 
-            </div> 
-        </div> 
+    <!-- ══ IMPACT TRACKER ══ -->
+    <div id="impacto" style="display:none">
+      <div class="impact-hero"><div class="impact-hero-title">Impact Tracker · Antes y Después</div><div class="impact-hero-sub">Comparación del estado de la audiencia antes de implementar inteligencia de datos vs el escenario actual con la plataforma activa · Bogotá · Q2 2026</div></div>
+      <div class="improvement-grid mb-18"><div class="improvement-item"><div class="improvement-pct">+38%</div><div class="improvement-label">Reducción de Churn</div></div><div class="improvement-item"><div class="improvement-pct">+4.2×</div><div class="improvement-label">ROAS vs 2.1× anterior</div></div><div class="improvement-item"><div class="improvement-pct">+$16K</div><div class="improvement-label">Incremento de LTV promedio</div></div><div class="improvement-item"><div class="improvement-pct">−42%</div><div class="improvement-label">Costo de adquisición</div></div></div>
+      <div class="before-after-grid mb-18"><div class="before-card"><div class="ba-title">📉 Estado Sin Inteligencia de Datos</div><div class="ba-metric"><span class="ba-label">ROAS</span><span class="ba-value">2.1×</span></div><div class="ba-metric"><span class="ba-label">Segmentos identificados</span><span class="ba-value">1 (general)</span></div><div class="ba-metric"><span class="ba-label">Costo por adquisición</span><span class="ba-value">$14.20</span></div><div class="ba-metric"><span class="ba-label">Churn rate promedio</span><span class="ba-value">8.7%</span></div><div class="ba-metric"><span class="ba-label">Tasa de conversión</span><span class="ba-value">8%</span></div><div class="ba-metric"><span class="ba-label">LTV promedio</span><span class="ba-value">$29.10</span></div><div class="ba-metric"><span class="ba-label">Presión publicitaria</span><span class="ba-value">Alta · Masiva</span></div></div><div class="after-card"><div class="ba-title">📈 Estado Con Plataforma Activa</div><div class="ba-metric"><span class="ba-label">ROAS</span><span class="ba-value">4.2×</span></div><div class="ba-metric"><span class="ba-label">Segmentos identificados</span><span class="ba-value">4 (diferenciados)</span></div><div class="ba-metric"><span class="ba-label">Costo por adquisición</span><span class="ba-value">$8.15</span></div><div class="ba-metric"><span class="ba-label">Churn rate promedio</span><span class="ba-value">3.2%</span></div><div class="ba-metric"><span class="ba-label">Tasa de conversión</span><span class="ba-value">20%</span></div><div class="ba-metric"><span class="ba-label">LTV promedio</span><span class="ba-value">$45.20</span></div><div class="ba-metric"><span class="ba-label">Presión publicitaria</span><span class="ba-value">Segmentada · Eficiente</span></div></div></div>
+      <div class="grid-2 mb-18"><div class="card"><div class="card-accent"></div><div class="card-title mb-12">Evolución del ROAS · Antes vs Ahora</div><div style="height:240px;"><canvas id="impactRoasChart"></canvas></div></div><div class="card"><div class="card-accent"></div><div class="card-title mb-12">Evolución del Embudo · Tasa de Conversión por Etapa</div><div style="height:240px;"><canvas id="impactFunnelChart"></canvas></div></div></div>
+      <div class="card mb-18"><div class="card-accent"></div><div class="card-title mb-4">Proyección de Mejora con Intervenciones Recomendadas</div><div class="card-subtitle">Escenario proyectado a 6 meses si se implementan las 3 acciones críticas identificadas por la plataforma</div><div style="height:260px;"><canvas id="impactProjectionChart"></canvas></div><div class="alert-banner green mt-16">✅ <span><strong>Resumen estratégico:</strong> La implementación de inteligencia de audiencias permite pasar de un modelo de comunicación masiva e ineficiente a un modelo segmentado, donde cada mensaje llega al consumidor correcto en el momento y canal adecuado. El diferencial estimado en revenue a 6 meses es de <strong>+$8.4M COP</strong> si se ejecutan las tres intervenciones críticas identificadas.</span></div></div>
+    </div>
 
-    </div> 
-</div> 
+  </div>
+</div>
 
-<script> 
-    let historyChart; // Variable global para audiencias
+<script>
+// ── STATE ──
+let historyChartInstance, impactRoasChartInst, impactFunnelChartInst, impactProjChartInst;
+let globalUsers = [];
+const HEADERS = {
+  home:'Executive Overview · Juan Valdez Q2 2026',
+  insights:'Consumer Insights · Psicografía y Comportamiento',
+  instrumentos:'Analytical Framework · Metodología Aplicada',
+  audiencias:'Audience Catalog · Segmentos y Simulación',
+  funnel:'Conversion Funnel · Análisis de Pérdida',
+  portafolio:'Media Portfolio · Inversión y Desempeño',
+  tablero:'Performance Monitor · Inversión en Tiempo Real',
+  impacto:'Impact Tracker · Antes y Después',
+};
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.color='#9e8d82';
+const RED='#9e1b2f',COFFEE='#3b1f1c',GOLD='#c9922a',MID='#6b3a35',GREEN='#1a7a4a';
 
-    // --- NAVEGACIÓN ---
-    function show(id, btn) { 
-        document.querySelectorAll(".content > div").forEach(d => d.style.display = "none"); 
-        document.getElementById(id).style.display = "block"; 
-        document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active")); 
-        btn.classList.add("active"); 
-    } 
+// ── NAV ──
+function show(id,btn){
+  document.querySelectorAll('.content > div').forEach(d=>d.style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  document.getElementById('headerTitle').textContent=HEADERS[id]||id;
+  if(id==='impacto' && !impactRoasChartInst) initImpactCharts();
+}
+function showCatalogSection(sectionId,btn){
+  ['simulador','biblioteca','segmentacion'].forEach(s=>{document.getElementById(s+'-section').style.display='none';});
+  document.getElementById(sectionId+'-section').style.display='block';
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if(sectionId==='biblioteca') renderUsers();
+}
 
-    // --- GRÁFICA HOME --- 
-    new Chart(document.getElementById("homeChart"), { 
-        type: 'line', 
-        data: { 
-            labels: ["W1", "W2", "W3", "W4", "W5"], 
-            datasets: [{ label: 'Engagement', data: [65, 72, 68, 85, 91], borderColor: '#9e1b2f', tension: 0.4, fill: true, backgroundColor: 'rgba(158, 27, 47, 0.05)' }] 
-        }, 
-        options: { maintainAspectRatio: false } 
-    }); 
+// ── PILLAR TOGGLE ──
+function togglePillar(id){document.getElementById(id).classList.toggle('open');}
+function openPillar(id){document.getElementById(id).classList.add('open');document.getElementById(id).scrollIntoView({behavior:'smooth',block:'nearest'});}
 
-    // --- SECCIÓN INSIGHTS ---
-    const insightData = {
-        all: { ticket: "$18.400", product: "Tinto Campesino", churn: "3.2%", radar: [80, 70, 60, 90, 75], channels: [40, 35, 25] },
-        genz: { ticket: "$24.500", product: "Nevado Oreo", churn: "5.1%", radar: [60, 95, 85, 40, 90], channels: [70, 20, 10] },
-        traditional: { ticket: "$12.200", product: "Café Filtrado", churn: "1.8%", radar: [95, 40, 30, 95, 40], channels: [10, 80, 10] },
-        premium: { ticket: "$42.000", product: "V60 Origen Geisha", churn: "2.5%", radar: [90, 80, 95, 70, 85], channels: [30, 50, 20] }
-    };
+// ── FW SUBTABS ──
+function showFwTab(tab,btn){
+  document.querySelectorAll('.fw-subpanel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.fw-subtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('fw-'+tab).classList.add('active');
+  btn.classList.add('active');
+}
 
-    let radarChart = new Chart(document.getElementById("radarChart"), {
-        type: 'radar',
-        data: {
-            labels: ['Lealtad', 'Innovación', 'Sostenibilidad', 'Tradición', 'Digital'],
-            datasets: [{ label: 'Perfil', data: insightData.all.radar, backgroundColor: 'rgba(158, 27, 47, 0.2)', borderColor: '#9e1b2f', pointBackgroundColor: '#9e1b2f' }]
-        },
-        options: { maintainAspectRatio: false, scales: { r: { beginAtZero: true, max: 100 } } }
-    });
+// ── USERS ──
+const SEGMENTS=['Premium','Digital Nomad','Office Worker','Gen Z'];
+const NOMBRES=['Andrés García','Lucía Moreno','Carlos Pérez','Elena Rodríguez','Santiago Torres','Tania López','Mateo Bermúdez','Valeria Soto','Juan Karam','Sofía Díaz','Camila Ruiz','Felipe Vargas','Daniela Herrera','Miguel Ospina','Laura Cárdenas'];
+const OCUPACIONES=['Estudiante Universitario','Ingeniero de Sistemas','Diseñadora Gráfica','Arquitecto','Consultora Senior','Barista Profesional','Emprendedor Digital','Gerente de Marketing'];
+const CANALES=['App Móvil','Tienda Física','App + Tienda','Retail'];
+const MBTI_POOL=['INTJ','INTP','ENTJ','ENTP','INFJ','INFP','ENFJ','ENFP','ISTJ','ISFJ','ESTJ','ESFJ','ISTP','ISFP','ESTP','ESFP'];
+const PSYCHO={
+  'Premium':{c:'Calidad como identidad; valora la herencia cafetera colombiana y el proceso artesanal.',m:'Reconocimiento y estatus · Exclusividad como recompensa emocional',n:'Autorrealización · Experiencias únicas y conocimiento profundo del producto',e:'La sofisticación del método de preparación valida su identidad como consumidor experto.',engAxial:'Alta frecuencia de compra (4+ visitas/semana). Ticket promedio $42K/visita.',engTrans:'Cliente habitual de 3+ años. Recomienda activamente la marca. No requiere estímulo publicitario.',r:'Personalizar con información sobre origen del grano y notas de cata. Proponer suscripción mensual. Activar entre 9-11am.'},
+  'Digital Nomad':{c:'Libertad geográfica y eficiencia tecnológica como valores centrales de estilo de vida.',m:'Autonomía e independencia · Ideología de productividad sin restricciones',n:'Seguridad y estabilidad · Necesidad de conectividad permanente',e:'Un buen café potencia su estado óptimo de trabajo. Asocia la marca con productividad y flujo.',engAxial:'Compra preferentemente por App (70%). Prefiere entrega a domicilio. Score UX es crítico para retenerlo.',engTrans:'Leal si la experiencia digital es fluida. Cambia de marca fácilmente ante cualquier fricción en checkout.',r:'Priorizar conversión en App. Activar beneficios por pedido digital. Contenido orientado a workspace y productividad.'},
+  'Office Worker':{c:'Productividad colectiva; el café como motor social del entorno laboral.',m:'Hábito y coerción positiva · El café es parte de la rutina de rendimiento grupal',n:'Pertenencia y cohesión de equipo · Necesidades sociales dominantes',e:'El break compartido refuerza vínculos de equipo. El café se convierte en un ritual colectivo.',engAxial:'Picos de compra a las 9am y 3pm. Compra frecuentemente para el grupo (ticket más alto por volumen).',engTrans:'La tarjeta corporativa de puntos puede anclar a todo el grupo de manera permanente.',r:'Combos corporativos de 4 o más. Campaña after-office 6-8pm. Implementar tarjeta de puntos empresarial.'},
+  'Gen Z':{c:'Consumo consciente; la estética, la sostenibilidad y el impacto social son innegociables.',m:'Validación social e identidad digital · La marca es una extensión de sus valores',n:'Reconocimiento y pertenencia · La marca que consume define cómo se percibe ante su red',e:'La trazabilidad del grano refuerza su ética personal de consumo responsable.',engAxial:'Muy activos en redes sociales. Prefieren bebidas frías y preparaciones especiales. Churn rate alto (5.1%).',engTrans:'Difícil de retener sin incentivos. La gamificación y las recompensas visuales aumentan retención en +38%.',r:'Contenido UGC para Stories. Destacar certificaciones de origen. Gamificar el programa de puntos para crear hábito.'},
+};
 
-    let channelsChart = new Chart(document.getElementById("channelsChart"), {
-        type: 'bar',
-        data: {
-            labels: ['App / Delivery', 'Tienda Física', 'Retail / Supermercado'],
-            datasets: [{ label: 'Uso de Canal %', data: insightData.all.channels, backgroundColor: ['#9e1b2f', '#4b2e2b', '#c6374a'] }]
-        },
-        options: { maintainAspectRatio: false }
-    });
+function renderUsers(){
+  const tbody=document.getElementById('userTableBody');
+  if(tbody.children.length>0) return;
+  for(let i=1;i<=150;i++){
+    const seg=SEGMENTS[Math.floor(Math.random()*SEGMENTS.length)];
+    const score=(Math.random()*5+4.5).toFixed(1);
+    const val=score>8?'Platinum':score>6.5?'Gold':'Silver';
+    const ticket=(Math.random()*35+12).toFixed(3);
+    const dias=Math.floor(Math.random()*25)+1;
+    const mbti=MBTI_POOL[Math.floor(Math.random()*MBTI_POOL.length)];
+    const user={id:`JV-${1000+i}`,nombre:NOMBRES[Math.floor(Math.random()*NOMBRES.length)],segmento:seg,edad:Math.floor(Math.random()*28+18),ocupacion:OCUPACIONES[Math.floor(Math.random()*OCUPACIONES.length)],score,ticket,dias,valor:val,canal:CANALES[Math.floor(Math.random()*CANALES.length)],mbti};
+    globalUsers.push(user);
+    const vc=val==='Platinum'?'val-platinum':val==='Gold'?'val-gold':'val-silver';
+    const sc=score>7.5?'score-high':score>6?'score-med':'score-low';
+    const active=dias<7;
+    const row=document.createElement('tr');
+    row.innerHTML=`<td><strong>#${user.id}</strong></td><td>${user.segmento}</td><td><span class="value-pill ${vc}">${val}</span></td><td><span class="status-ind ${active?'s-active':'s-warning'}"><span class="status-dot"></span>${active?'Activo':'Inactivo'}</span></td><td class="text-muted">Hace ${dias} días</td><td class="fw-600">$${user.ticket}</td><td><span class="score-badge ${sc}">${score}</span></td><td><button onclick="openProfileModal('${user.id}')" style="background:var(--red);color:white;border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-size:11.5px;font-weight:600;font-family:inherit;">Ver Perfil</button></td>`;
+    tbody.appendChild(row);
+  }
+}
+function openProfileModal(userId){
+  const user=globalUsers.find(u=>u.id===userId);
+  if(!user) return;
+  document.getElementById('modalName').textContent=user.nombre;
+  document.getElementById('modalId').textContent='ID: #'+user.id;
+  document.getElementById('mAge').textContent=user.edad+' años';
+  document.getElementById('mOcup').textContent=user.ocupacion;
+  document.getElementById('mTicket').textContent='$'+user.ticket;
+  document.getElementById('mScore').textContent=user.score+' / 10';
+  document.getElementById('mCanal').textContent=user.canal;
+  document.getElementById('mMbti').textContent=user.mbti;
+  const tags=document.getElementById('modalTags');
+  const vc=user.valor==='Platinum'?'val-platinum':user.valor==='Gold'?'val-gold':'val-silver';
+  tags.innerHTML=`<span style="background:rgba(255,255,255,0.15);color:rgba(255,255,255,0.9);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;text-transform:uppercase;">${user.segmento}</span><span class="value-pill ${vc}">${user.valor}</span><span style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;">${user.mbti}</span>`;
+  const p=PSYCHO[user.segmento]||PSYCHO['Premium'];
+  document.getElementById('mCreencias').textContent=p.c;
+  document.getElementById('mMotiv').textContent=p.m;
+  document.getElementById('mNecesidad').textContent=p.n;
+  document.getElementById('mExp').textContent=p.e;
+  document.getElementById('mEngAxial').textContent=p.engAxial;
+  document.getElementById('mEngTrans').textContent=p.engTrans;
+  document.getElementById('mRec').textContent=p.r;
+  document.getElementById('profileModal').classList.add('open');
+}
+function closeProfileModal(e){
+  if(!e||e.target===document.getElementById('profileModal')){document.getElementById('profileModal').classList.remove('open');}
+}
+function filterUsers(){
+  const q=document.getElementById('searchUser').value.toUpperCase();
+  document.querySelectorAll('#userTableBody tr').forEach(tr=>{tr.style.display=tr.textContent.toUpperCase().includes(q)?'':'none';});
+}
 
-    new Chart(document.getElementById("territoryChart"), {
-        type: 'pie',
-        data: { labels: ['Bogotá', 'Medellín', 'Cali', 'Internacional'], datasets: [{ data: [45, 25, 15, 15], backgroundColor: ['#9e1b2f', '#c6374a', '#4b2e2b', '#6b7280'] }] },
-        options: { maintainAspectRatio: false }
-    });
+// ── CLUSTERING ──
+const clusterCtx=document.getElementById('clusterChart').getContext('2d');
+function generateCluster(cx,cy,n,spread){const pts=[];for(let i=0;i<n;i++){pts.push({x:cx+(Math.random()-0.5)*spread,y:cy+(Math.random()-0.5)*spread});}return pts;}
+new Chart(clusterCtx,{type:'scatter',data:{datasets:[{label:'Premium',data:generateCluster(8.2,8.5,35,1.2),backgroundColor:'rgba(158,27,47,0.65)',pointRadius:5,pointHoverRadius:7},{label:'Office Workers',data:generateCluster(5.5,6.0,40,1.5),backgroundColor:'rgba(201,146,42,0.65)',pointRadius:5,pointHoverRadius:7},{label:'Generation Z',data:generateCluster(3.2,5.0,48,1.8),backgroundColor:'rgba(26,122,74,0.65)',pointRadius:5,pointHoverRadius:7},{label:'Digital Nomads',data:generateCluster(6.0,4.0,28,1.4),backgroundColor:'rgba(107,58,53,0.65)',pointRadius:5,pointHoverRadius:7}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:(ctx)=>`${ctx.dataset.label}: Frec. ${ctx.parsed.x.toFixed(1)} · Ticket ${ctx.parsed.y.toFixed(1)}`}}},scales:{x:{title:{display:true,text:'Frecuencia de Compra (veces/mes)',color:'#9e8d82',font:{size:11}},min:0,max:11,grid:{color:'#f0ebe6'}},y:{title:{display:true,text:'Ticket Promedio (índice)',color:'#9e8d82',font:{size:11}},min:0,max:11,grid:{color:'#f0ebe6'}}}}});
 
-    new Chart(document.getElementById("heatChart"), {
-        type: 'line',
-        data: {
-            labels: ['6am', '9am', '12pm', '3pm', '6pm', '9pm'],
-            datasets: [{ label: 'Tráfico de Usuarios', data: [80, 100, 40, 90, 70, 30], borderColor: '#9e1b2f', backgroundColor: 'rgba(158, 27, 47, 0.1)', fill: true, tension: 0.4 }]
-        },
-        options: { maintainAspectRatio: false }
-    });
+// ── HOME CHARTS ──
+new Chart(document.getElementById('homeChart'),{type:'line',data:{labels:['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'],datasets:[{label:'Índice de Vínculo',data:[65,72,68,80,85,79,88,91],borderColor:RED,tension:0.4,fill:true,backgroundColor:'rgba(158,27,47,0.06)',pointBackgroundColor:RED,pointRadius:4}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f0ebe6'}},x:{grid:{display:false}}}}});
+new Chart(document.getElementById('segmentDonut'),{type:'doughnut',data:{labels:['Premium · Coffee Lovers','Generation Z','Office Workers','Digital Nomads','Tradicionales'],datasets:[{data:[28,24,22,14,12],backgroundColor:[RED,GOLD,COFFEE,MID,'#9e8d82'],borderWidth:0,hoverOffset:10}]},options:{maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'right',labels:{font:{size:12},boxWidth:12,padding:14}}}}});
 
-    function updateInsightData() {
-        const val = document.getElementById('segmentSelect').value;
-        const data = insightData[val];
-        document.getElementById('insightTicket').innerText = data.ticket;
-        document.getElementById('insightProduct').innerText = data.product;
-        document.getElementById('insightChurn').innerText = data.churn;
-        radarChart.data.datasets[0].data = data.radar;
-        radarChart.update();
-        channelsChart.data.datasets[0].data = data.channels;
-        channelsChart.update();
-    }
+// ── INSIGHTS ──
+const insightData={
+  all:{ticket:'$18.400',product:'Tinto Campesino',churn:'3.2%',peak:'9am',radar:[80,70,60,90,75],channels:[40,35,25],territory:[45,25,15,15],heat:[80,100,40,90,70,30]},
+  genz:{ticket:'$24.500',product:'Nevado Oreo',churn:'5.1%',peak:'6pm',radar:[60,95,85,40,90],channels:[70,20,10],territory:[30,40,20,10],heat:[20,40,60,85,100,95]},
+  traditional:{ticket:'$12.200',product:'Café Filtrado',churn:'1.8%',peak:'6am',radar:[95,40,30,95,40],channels:[10,80,10],territory:[50,20,25,5],heat:[100,80,60,50,30,10]},
+  premium:{ticket:'$42.000',product:'V60 Origen Geisha',churn:'2.5%',peak:'10am',radar:[90,80,95,70,85],channels:[30,50,20],territory:[40,30,10,20],heat:[40,90,100,80,50,30]}
+};
+const radarChart=new Chart(document.getElementById('radarChart'),{type:'radar',data:{labels:['Lealtad','Innovación','Sostenibilidad','Tradición','Digital'],datasets:[{label:'Perfil Segmento',data:insightData.all.radar,backgroundColor:'rgba(158,27,47,0.12)',borderColor:RED,pointBackgroundColor:RED}]},options:{maintainAspectRatio:false,scales:{r:{beginAtZero:true,max:100,ticks:{stepSize:25,font:{size:10}},grid:{color:'#ede9e5'}}}}});
+const territoryChart=new Chart(document.getElementById('territoryChart'),{type:'doughnut',data:{labels:['Bogotá','Medellín','Cali','Internacional'],datasets:[{data:insightData.all.territory,backgroundColor:[RED,GOLD,COFFEE,'#9e8d82'],borderWidth:0,hoverOffset:8}]},options:{maintainAspectRatio:false,cutout:'60%',plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10,padding:10}}}}});
+const heatChart=new Chart(document.getElementById('heatChart'),{type:'bar',data:{labels:['6am','9am','12pm','3pm','6pm','9pm'],datasets:[{label:'Tráfico',data:insightData.all.heat,backgroundColor:(ctx)=>{const v=ctx.parsed.y;return v>=90?RED:v>=60?GOLD:'#d4c4ba';},borderRadius:6}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{grid:{color:'#f0ebe6'}},x:{grid:{display:false}}}}});
+function renderChannelRows(data){
+  const labels=['App / Delivery','Tienda Física','Retail / Supermercado'];
+  const colors=[RED,COFFEE,GOLD];
+  const wrap=document.getElementById('channelRows');
+  wrap.innerHTML='';
+  data.forEach((v,i)=>{wrap.innerHTML+=`<div class="channel-row"><div class="channel-name" style="color:${colors[i]};font-weight:700;">${labels[i]}</div><div class="channel-bar-wrap"><div class="channel-bar"><div class="channel-bar-fill" style="width:${v}%;background:${colors[i]};"></div></div></div><div class="channel-meta"><strong>${v}%</strong> de usuarios</div></div>`;});
+}
+renderChannelRows(insightData.all.channels);
+function updateInsightData(){
+  const val=document.getElementById('segmentSelect').value;
+  const d=insightData[val];
+  document.getElementById('insightTicket').textContent=d.ticket;
+  document.getElementById('insightProduct').textContent=d.product;
+  document.getElementById('insightChurn').textContent=d.churn;
+  document.getElementById('insightPeak').textContent=d.peak;
+  radarChart.data.datasets[0].data=d.radar;radarChart.update();
+  territoryChart.data.datasets[0].data=d.territory;territoryChart.update();
+  heatChart.data.datasets[0].data=d.heat;heatChart.update();
+  renderChannelRows(d.channels);
+}
 
-    // --- INICIALIZACIÓN GRÁFICA AUDIENCIAS --- 
-    window.addEventListener('load', () => {
-        historyChart = new Chart(document.getElementById("historyChart"), { 
-            type: 'line', 
-            data: { 
-                labels: ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Hoy"], 
-                datasets: [
-                    { label: 'Score Actual', data: [6, 6.2, 6.5, 6.8, 5.6], borderColor: '#9e1b2f', backgroundColor: 'rgba(158, 27, 47, 0.1)', fill: true }, 
-                    { label: 'Avg Histórico', data: [6.2, 6.2, 6.2, 6.2, 6.2], borderColor: '#6b7280', borderDash: [5,5], fill: false }
-                ] 
-            }, 
-            options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 10 } } } 
-        });
-        updatePortfolio(); // Para inicializar portafolio
-    });
+// ══════════════════════════════════════════════════════
+// AJUSTE 1: TABLA DINÁMICA POR CIUDAD · JUAN VALDEZ
+// Cada ciudad tiene su propio comportamiento en el embudo
+// con variaciones realistas para las 4 semanas
+// ══════════════════════════════════════════════════════
+const weeklyData = {
+  bogota: {
+    name: 'Bogotá', pop: '9M', mercado: '1.5M', alcance: '1M',
+    rows: [
+      { etapa:'Población',          s1:'9M',   s2:'9M',   s3:'9M',   s4:'9M',   trend:'—',                           obs:'Constante. Geo fijo.',                                  color:'normal' },
+      { etapa:'Mercado Potencial',  s1:'1.5M', s2:'1.5M', s3:'1.5M', s4:'1.5M', trend:'—',                           obs:'Sin variación estructural.',                            color:'normal' },
+      { etapa:'Alcance (recordación)',s1:'1M', s2:'980K', s3:'960K', s4:'940K', trend:'▼ −6%',                       obs:'Leve caída. Saturación publicitaria.',                  color:'warn' },
+      { etapa:'Interés Activo',     s1:'800K', s2:'700K', s3:'600K', s4:'500K', trend:'▼ −37.5%',                    obs:'⚠️ Interés cae. Revisar contenido urgente.',           color:'alert' },
+      { etapa:'Intención de Compra',s1:'400K', s2:'400K', s3:'400K', s4:'400K', trend:'—',                           obs:'Intención estable. Motivación previa fuerte.',          color:'normal' },
+      { etapa:'Primera Compra',     s1:'20K',  s2:'20K',  s3:'20K',  s4:'20K',  trend:'—',                           obs:'Brecha enorme Interés→Compra. Prioridad de intervención.',color:'warn' },
+      { etapa:'Vínculo con Marca',  s1:'2K',   s2:'2K',   s3:'2K',   s4:'2K',   trend:'—',                           obs:'Engagement transaccional bajo. Falta programa de fidelización.',color:'warn' },
+      { etapa:'Retención Activa',   s1:'1',    s2:'0',    s3:'0',    s4:'0',    trend:'▼ Crítico',                   obs:'⚠️ Sin programa de retención activo.',                 color:'alert' },
+      { etapa:'Lealtad Consolidada',s1:'1',    s2:'0',    s3:'0',    s4:'0',    trend:'▼ Crítico',                   obs:'Vínculo de largo plazo = 0. Intervención urgente.',    color:'alert' },
+    ],
+    alert: '⚠️ <strong>Hallazgo clave Bogotá:</strong> La caída del Interés Activo del 37.5% en 4 semanas indica fatiga del mensaje en la ciudad capital. El análisis estadístico confirma variabilidad divergente (CV > 0.7). Acción recomendada: intervención de contenido en semana 3.',
+    alertClass: 'gold'
+  },
+  medellin: {
+    name: 'Medellín', pop: '4.2M', mercado: '650K', alcance: '520K',
+    rows: [
+      { etapa:'Población',          s1:'4.2M', s2:'4.2M', s3:'4.2M', s4:'4.2M', trend:'—',                           obs:'Constante. Geo fijo.',                                  color:'normal' },
+      { etapa:'Mercado Potencial',  s1:'650K', s2:'650K', s3:'650K', s4:'650K', trend:'—',                           obs:'Sin variación estructural.',                            color:'normal' },
+      { etapa:'Alcance (recordación)',s1:'520K',s2:'530K',s3:'540K', s4:'555K', trend:'▲ +6.7%',                     obs:'✅ Crecimiento sostenido. Baja saturación.',            color:'ok' },
+      { etapa:'Interés Activo',     s1:'390K', s2:'405K', s3:'418K', s4:'430K', trend:'▲ +10.3%',                   obs:'✅ Interés en alza. Ciudad con mejor respuesta del país.',color:'ok' },
+      { etapa:'Intención de Compra',s1:'210K', s2:'218K', s3:'225K', s4:'232K', trend:'▲ +10.5%',                   obs:'✅ Conversión de interés a intención superior al promedio.',color:'ok' },
+      { etapa:'Primera Compra',     s1:'18K',  s2:'19.5K',s3:'21K',  s4:'22.5K',trend:'▲ +25%',                    obs:'✅ Medellín lidera en tasa de conversión a compra.',    color:'ok' },
+      { etapa:'Vínculo con Marca',  s1:'3.2K', s2:'3.5K', s3:'3.8K', s4:'4.1K', trend:'▲ +28%',                    obs:'✅ Engagement en crecimiento. LTV superior al promedio.',color:'ok' },
+      { etapa:'Retención Activa',   s1:'1.8K', s2:'2.1K', s3:'2.4K', s4:'2.7K', trend:'▲ +50%',                    obs:'✅ Programa de puntos funcionando. Recompra consolidada.',color:'ok' },
+      { etapa:'Lealtad Consolidada',s1:'820',  s2:'950',  s3:'1.1K', s4:'1.3K', trend:'▲ +58%',                    obs:'✅ Mayor tasa de lealtad. Ciudad recomendada para expansión.',color:'ok' },
+    ],
+    alert: '✅ <strong>Hallazgo clave Medellín:</strong> Ciudad con mejor desempeño de embudo completo. Baja saturación publicitaria y alta respuesta a contenido premium. Recomendación: incrementar inversión +15% aprovechando el Sharpe Ratio favorable.',
+    alertClass: 'green'
+  },
+  cali: {
+    name: 'Cali', pop: '2.9M', mercado: '420K', alcance: '310K',
+    rows: [
+      { etapa:'Población',          s1:'2.9M', s2:'2.9M', s3:'2.9M', s4:'2.9M', trend:'—',                           obs:'Constante. Geo fijo.',                                  color:'normal' },
+      { etapa:'Mercado Potencial',  s1:'420K', s2:'420K', s3:'420K', s4:'420K', trend:'—',                           obs:'Sin variación estructural.',                            color:'normal' },
+      { etapa:'Alcance (recordación)',s1:'310K',s2:'295K',s3:'275K', s4:'260K', trend:'▼ −16%',                     obs:'⚠️ Pérdida de alcance significativa. Revisar cobertura de medios.',color:'alert' },
+      { etapa:'Interés Activo',     s1:'185K', s2:'170K', s3:'150K', s4:'132K', trend:'▼ −28.6%',                   obs:'⚠️ Caída preocupante. Mensaje no resuena en este mercado.',color:'alert' },
+      { etapa:'Intención de Compra',s1:'88K',  s2:'80K',  s3:'72K',  s4:'65K',  trend:'▼ −26.1%',                  obs:'⚠️ Intención cae junto al interés. Señal de desconexión del mensaje.',color:'alert' },
+      { etapa:'Primera Compra',     s1:'7.2K', s2:'6.5K', s3:'5.8K', s4:'5.1K', trend:'▼ −29.2%',                  obs:'⚠️ Conversion rate por debajo del promedio nacional.',  color:'alert' },
+      { etapa:'Vínculo con Marca',  s1:'620',  s2:'580',  s3:'530',  s4:'490',   trend:'▼ −21%',                   obs:'Bajo engagement. Perfil de consumidor diferente al modelo actual.',color:'warn' },
+      { etapa:'Retención Activa',   s1:'95',   s2:'80',   s3:'65',   s4:'52',    trend:'▼ −45.3%',                  obs:'⚠️ Retención crítica. No hay programa diferenciado para Cali.',color:'alert' },
+      { etapa:'Lealtad Consolidada',s1:'28',   s2:'22',   s3:'16',   s4:'11',    trend:'▼ −60.7%',                  obs:'⚠️ Lealtad en colapso. Mercado en riesgo de abandono total.',color:'alert' },
+    ],
+    alert: '🚨 <strong>Hallazgo clave Cali:</strong> Tendencia negativa sostenida en todas las etapas del embudo. El mensaje de Juan Valdez no está resonando en este mercado. CV estimado > 0.7 (Divergente). Recomendación: rediseño de estrategia de contenido local y análisis de audiencia diferenciado.',
+    alertClass: ''
+  },
+  barranquilla: {
+    name: 'Barranquilla', pop: '1.9M', mercado: '260K', alcance: '195K',
+    rows: [
+      { etapa:'Población',          s1:'1.9M', s2:'1.9M', s3:'1.9M', s4:'1.9M', trend:'—',                           obs:'Constante. Geo fijo.',                                  color:'normal' },
+      { etapa:'Mercado Potencial',  s1:'260K', s2:'260K', s3:'260K', s4:'260K', trend:'—',                           obs:'Sin variación estructural.',                            color:'normal' },
+      { etapa:'Alcance (recordación)',s1:'195K',s2:'198K',s3:'200K', s4:'201K', trend:'▲ +3.1%',                    obs:'Alcance estable con leve crecimiento orgánico.',        color:'ok' },
+      { etapa:'Interés Activo',     s1:'110K', s2:'108K', s3:'107K', s4:'105K', trend:'▼ −4.5%',                   obs:'Leve caída. Mercado en punto de equilibrio. Monitorear.',color:'warn' },
+      { etapa:'Intención de Compra',s1:'48K',  s2:'47K',  s3:'46K',  s4:'45K',  trend:'▼ −6.3%',                  obs:'Caída leve pero sostenida. Podría indicar inicio de fatiga.',color:'warn' },
+      { etapa:'Primera Compra',     s1:'5.8K', s2:'5.8K', s3:'5.9K', s4:'6.0K', trend:'▲ +3.4%',                  obs:'✅ Tasa de primera compra estable. Canal tienda física funciona.',color:'ok' },
+      { etapa:'Vínculo con Marca',  s1:'680',  s2:'690',  s3:'695',  s4:'700',   trend:'▲ +2.9%',                  obs:'✅ Engagement estable. Base sólida para activar programa de fidelización.',color:'ok' },
+      { etapa:'Retención Activa',   s1:'210',  s2:'215',  s3:'220',  s4:'228',   trend:'▲ +8.6%',                  obs:'✅ Única ciudad con crecimiento en retención. Modelo a replicar.',color:'ok' },
+      { etapa:'Lealtad Consolidada',s1:'78',   s2:'82',   s3:'86',   s4:'91',    trend:'▲ +16.7%',                 obs:'✅ Lealtad en crecimiento. Mercado con potencial subexplotado.',color:'ok' },
+    ],
+    alert: '📊 <strong>Hallazgo clave Barranquilla:</strong> Mercado en equilibrio con señales positivas en retención y lealtad, a pesar de la caída leve en interés. Oportunidad de inversión moderada con bajo riesgo. CV estimado: 0.45 (Variante). Acción: activar campaña de retención para convertir interés en vínculo duradero.',
+    alertClass: 'gold'
+  }
+};
 
-    function updateEngagement() { 
-        let ux = parseInt(document.getElementById('ux').value); 
-        let fr = parseInt(document.getElementById('freq').value); 
-        let ti = parseInt(document.getElementById('time').value); 
-        let target = document.getElementById('targetAudience').value;
+function renderWeeklyTable(){
+  const city = document.getElementById('citySelect').value;
+  const data = weeklyData[city];
+  document.getElementById('weeklyTableSubtitle').textContent =
+    `Análisis de tendencia por etapa · 4 semanas consecutivas · Ciudad seleccionada: ${data.name}`;
 
-        document.getElementById('valUx').innerText = ux;
-        document.getElementById('valFreq').innerText = fr;
-        document.getElementById('valTime').innerText = ti;
+  const tbody = document.getElementById('weeklyTableBody');
+  tbody.innerHTML = '';
 
-        let score = ((ux + fr + ti) / 3).toFixed(1); 
-        document.getElementById('indiceVal').innerText = score; 
+  data.rows.forEach(row => {
+    let trendCell = '';
+    if(row.trend === '—') trendCell = '<td>—</td>';
+    else if(row.trend.startsWith('▲')) trendCell = `<td><span class="trend-up">${row.trend}</span></td>`;
+    else trendCell = `<td><span class="trend-down">${row.trend}</span></td>`;
 
-        let reachMap = { lovers: 450000, digital: 820000, office: 310000 };
-        let finalReach = (reachMap[target] * (score / 6.5)).toFixed(0);
-        document.getElementById('reachVal').innerText = (finalReach / 1000).toFixed(0) + "k";
+    let rowStyle = '';
+    if(row.color === 'alert') rowStyle = 'style="background:rgba(158,27,47,0.03);"';
+    else if(row.color === 'ok') rowStyle = 'style="background:rgba(26,122,74,0.03);"';
 
-        historyChart.data.datasets[0].data[4] = parseFloat(score);
-        historyChart.update();
+    let obsStyle = '';
+    if(row.color === 'alert') obsStyle = 'style="font-size:11.5px;color:var(--red);"';
+    else if(row.color === 'ok') obsStyle = 'style="font-size:11.5px;color:var(--green);"';
+    else if(row.color === 'warn') obsStyle = 'style="font-size:11.5px;color:var(--orange);"';
+    else obsStyle = 'style="font-size:11.5px;color:var(--text-muted);"';
 
-        let alertBox = document.getElementById('engagementAlert');
-        if(score < 6) {
-            alertBox.innerHTML = "⚠️ <strong>Alerta de Analista:</strong> Score por debajo del umbral. Riesgo de fatiga.";
-            alertBox.style.background = "#fee2e2"; alertBox.style.color = "#9e1b2f";
-        } else {
-            alertBox.innerHTML = "✅ <strong>Optimización Exitosa:</strong> La audiencia muestra alta receptividad.";
-            alertBox.style.background = "#dcfce7"; alertBox.style.color = "#166534";
-        }
-    } 
+    tbody.innerHTML += `
+      <tr ${rowStyle}>
+        <td>${row.etapa}</td>
+        <td>${row.s1}</td><td>${row.s2}</td><td>${row.s3}</td><td>${row.s4}</td>
+        ${trendCell}
+        <td ${obsStyle}>${row.obs}</td>
+      </tr>`;
+  });
 
-    // --- GRÁFICA FUNNEL --- 
-    new Chart(document.getElementById("funnelChart"), { 
-        type: 'bar', 
-        data: { labels: ["Potential", "Awareness", "Interest", "Intention", "Loyalty"], datasets: [{ label: 'Usuarios (M)', data: [10, 3, 0.9, 0.4, 0.1], backgroundColor: '#9e1b2f' }] }, 
-        options: { indexAxis: 'y', maintainAspectRatio: false } 
-    }); 
+  // Update alert banner
+  const alertEl = document.getElementById('weeklyAlert');
+  alertEl.className = 'alert-banner mt-16' + (data.alertClass ? ' ' + data.alertClass : '');
+  const icon = data.alertClass === 'green' ? '✅' : data.alertClass === 'gold' ? '⚡' : '🚨';
+  document.getElementById('weeklyAlertText').innerHTML = data.alert;
+  alertEl.firstChild.textContent = icon + ' ';
+}
 
-    // --- LÓGICA DE PORTAFOLIO ---
-    function updatePortfolio() { 
-        let b = parseInt(document.getElementById('invB').value); 
-        let m = parseInt(document.getElementById('invM').value); 
-        let c = parseInt(document.getElementById('invC').value); 
-        let total = b + m + c;
-        
-        document.getElementById('totalInv').innerText = total + "%"; 
-        document.getElementById('tB').innerText = b + "%"; 
-        document.getElementById('tM').innerText = m + "%"; 
-        document.getElementById('tC').innerText = c + "%"; 
+// ── FUNNEL ──
+new Chart(document.getElementById('funnelChart'),{type:'bar',data:{labels:['Alcance','Interés','Intención','Compra','Lealtad'],datasets:[{label:'Actual',data:[152430,97555,53650,31117,18291],backgroundColor:[COFFEE,MID,RED,GOLD,GREEN],borderRadius:6},{label:'Potencial',data:[152430,130000,95000,70000,50000],backgroundColor:'rgba(0,0,0,0.05)',borderRadius:6}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#f0ebe6'}},x:{grid:{display:false}}}}});
 
-        let calcROI = ((b * 0.22) + (m * 0.18) + (c * 0.12)) / (total / 100 || 1);
-        document.getElementById('roiVal').innerText = calcROI.toFixed(1) + "%";
+// ── PORTFOLIO ──
+new Chart(document.getElementById('portfolioChart'),{type:'bar',data:{labels:['Bogotá','Medellín','Cali','Barranquilla','Bucaramanga','Pereira'],datasets:[{label:'Consumo JV (índice)',data:[100,78,65,42,38,35],backgroundColor:RED,borderRadius:5},{label:'Benchmark Sector',data:[85,70,60,50,45,40],backgroundColor:'#d4c4ba',borderRadius:5}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#f0ebe6'}},x:{grid:{display:false}}}}});
 
-        let calcEng = ((b * 8.2) + (m * 7.5) + (c * 6.8)) / 100;
-        document.getElementById('engProj').innerText = calcEng.toFixed(1);
+// ══════════════════════════════════════════════════════
+// AJUSTE 2: MATRIZ DE DESEMPEÑO TOTALMENTE REACTIVA
+// Cada ciudad calcula su ROI, Índice y Riesgo en tiempo real
+// basado en la inversión asignada con sus sliders
+// ══════════════════════════════════════════════════════
+function updatePortfolio(){
+  const b = parseInt(document.getElementById('invB').value) || 0;
+  const m = parseInt(document.getElementById('invM').value) || 0;
+  const c = parseInt(document.getElementById('invC').value) || 0;
+  const total = b + m + c;
 
-        document.getElementById('rB').innerText = b > 60 ? "Alto" : "Bajo";
-        document.getElementById('rM').innerText = m > 50 ? "Medio" : "Bajo";
-        document.getElementById('rC').innerText = c > 40 ? "Alto" : "Medio";
+  // Actualizar labels de los sliders
+  document.getElementById('vB').textContent = b;
+  document.getElementById('vM').textContent = m;
+  document.getElementById('vC').textContent = c;
 
-        let rGlobal = document.getElementById('riskVal');
-        if (total > 110 || c > 45) {
-            rGlobal.innerText = "Alto"; rGlobal.style.color = "red";
-        } else if (total < 90) {
-            rGlobal.innerText = "Bajo"; rGlobal.style.color = "green";
-        } else {
-            rGlobal.innerText = "Medio"; rGlobal.style.color = "#4b2e2b";
-        }
-    } 
-</script> 
-</body> 
+  // Actualizar columna "Inversión" de la tabla
+  document.getElementById('tB').textContent = b + '%';
+  document.getElementById('tM').textContent = m + '%';
+  document.getElementById('tC').textContent = c + '%';
+
+  // ── Bogotá: ROI base 22%, alta saturación, ROI cae si pasa de 60%
+  const roiB_raw = b <= 60 ? (22 + (b - 40) * 0.15) : (22 + (60 - 40) * 0.15 - (b - 60) * 0.35);
+  const roiB = Math.max(8, Math.min(30, roiB_raw)).toFixed(0);
+  const engB  = Math.min(10, (8.2 + (b - 40) * 0.012)).toFixed(1);
+  const riskB = b > 65 ? 'Alto' : b > 45 ? 'Medio' : 'Bajo';
+  const riskBClass = riskB === 'Alto' ? 's-alert' : riskB === 'Medio' ? 's-warning' : 's-active';
+  const roiBColor = roiB >= 20 ? 'var(--green)' : roiB >= 14 ? 'var(--orange)' : 'var(--red)';
+
+  // ── Medellín: ROI base 18%, baja saturación, escala mejor
+  const roiM_raw = 18 + (m - 30) * 0.22;
+  const roiM = Math.max(6, Math.min(34, roiM_raw)).toFixed(0);
+  const engM  = Math.min(10, (7.5 + (m - 30) * 0.018)).toFixed(1);
+  const riskM = m < 15 ? 'Alto' : m > 55 ? 'Medio' : 'Bajo';
+  const riskMClass = riskM === 'Alto' ? 's-alert' : riskM === 'Medio' ? 's-warning' : 's-active';
+  const roiMColor = roiM >= 18 ? 'var(--green)' : roiM >= 12 ? 'var(--orange)' : 'var(--red)';
+
+  // ── Cali: ROI base 14%, alta volatilidad, riesgo estructural
+  const roiC_raw = 14 + (c - 30) * 0.08;
+  const roiC = Math.max(4, Math.min(20, roiC_raw)).toFixed(0);
+  const engC  = Math.min(10, (6.2 + (c - 30) * 0.010)).toFixed(1);
+  const riskC = c > 45 ? 'Alto' : c > 25 ? 'Alto' : 'Medio';
+  const riskCClass = riskC === 'Alto' ? 's-alert' : 's-warning';
+  const roiCColor = roiC >= 14 ? 'var(--orange)' : 'var(--red)';
+
+  // Aplicar a la tabla
+  document.getElementById('roiB').textContent = roiB + '%';
+  document.getElementById('roiB').style.color = roiBColor;
+  document.getElementById('eB').textContent = engB;
+  document.getElementById('riskB').innerHTML = `<span class="status-ind ${riskBClass}"><span class="status-dot"></span>${riskB}</span>`;
+
+  document.getElementById('roiM').textContent = roiM + '%';
+  document.getElementById('roiM').style.color = roiMColor;
+  document.getElementById('eM').textContent = engM;
+  document.getElementById('riskM').innerHTML = `<span class="status-ind ${riskMClass}"><span class="status-dot"></span>${riskM}</span>`;
+
+  document.getElementById('roiC').textContent = roiC + '%';
+  document.getElementById('roiC').style.color = roiCColor;
+  document.getElementById('eC').textContent = engC;
+  document.getElementById('riskC').innerHTML = `<span class="status-ind ${riskCClass}"><span class="status-dot"></span>${riskC}</span>`;
+
+  // KPIs globales
+  const ti = document.getElementById('totalInv');
+  ti.textContent = total + '%';
+  ti.style.color = total > 100 ? 'var(--red)' : total < 90 ? 'var(--orange)' : 'var(--coffee)';
+
+  const roiGlobal = Math.round((b * roiB_raw + m * roiM_raw + c * roiC_raw) / Math.max(1, total));
+  document.getElementById('roiVal').textContent = Math.max(0, Math.min(50, roiGlobal)) + '%';
+
+  const engGlobal = ((b * parseFloat(engB) + m * parseFloat(engM) + c * parseFloat(engC)) / Math.max(1, total)).toFixed(1);
+  document.getElementById('engProj').textContent = engGlobal;
+
+  const riskGlobal = total > 110 ? 'Alto' : b > 70 ? 'Medio-Alto' : riskC === 'Alto' && c > 40 ? 'Medio-Alto' : 'Medio';
+  document.getElementById('riskVal').textContent = riskGlobal;
+
+  // Alerta de portafolio
+  const alertEl = document.getElementById('portfolioAlert');
+  if(total > 100){
+    alertEl.className = 'alert-banner mt-12';
+    alertEl.innerHTML = '⚠️ <span>La asignación supera el 100% del presupuesto. Ajusta los valores para distribuir correctamente.</span>';
+  } else if(m > 40){
+    alertEl.className = 'alert-banner green mt-12';
+    alertEl.innerHTML = '✅ <span>Medellín con alta participación: baja saturación + alto retorno esperado. Escenario favorable.</span>';
+  } else if(c > 50){
+    alertEl.className = 'alert-banner mt-12';
+    alertEl.innerHTML = '🚨 <span>Alta concentración en Cali aumenta el riesgo del portafolio. Cali tiene ROI estructuralmente bajo.</span>';
+  } else {
+    alertEl.className = 'alert-banner gold mt-12';
+    alertEl.innerHTML = '📊 <span>Distribución estándar. Considera incrementar Medellín por su Sharpe Ratio favorable vs Bogotá.</span>';
+  }
+
+  // Alerta de la matriz de ciudades
+  const matrixAlert = document.getElementById('cityMatrixAlert');
+  if(parseFloat(roiM) > parseFloat(roiB)){
+    matrixAlert.className = 'alert-banner coffee mt-16';
+    matrixAlert.innerHTML = `🗺️ <span><strong>Medellín supera a Bogotá en ROI (${roiM}% vs ${roiB}%).</strong> Menor saturación y mayor índice de vínculo hacen de Medellín la mejor asignación marginal de este portafolio.</span>`;
+  } else if(parseFloat(roiC) < 10){
+    matrixAlert.className = 'alert-banner mt-16';
+    matrixAlert.innerHTML = `🚨 <span><strong>Cali con ROI crítico (${roiC}%).</strong> La inversión actual en esta ciudad no justifica el riesgo. Reducir exposición a Cali y reasignar a Medellín.</span>`;
+  } else {
+    matrixAlert.className = 'alert-banner coffee mt-16';
+    matrixAlert.innerHTML = `🗺️ <span><strong>Medellín:</strong> menor saturación publicitaria + alto índice de vínculo Premium. ROI actual: ${roiM}%. Se recomienda +15% de inversión (Sharpe Ratio favorable frente a Bogotá).</span>`;
+  }
+
+  updateRangeStyle();
+}
+
+// ── PERFORMANCE CHART ──
+new Chart(document.getElementById('tableroChart'),{type:'bar',data:{labels:['Meta Ads','Google Ads','TikTok Ads','LinkedIn Ads'],datasets:[{label:'ROAS Actual',data:[5.1,3.8,6.2,2.4],backgroundColor:[RED,GOLD,GREEN,COFFEE],borderRadius:6},{label:'Target 4.0×',data:[4,4,4,4],backgroundColor:'rgba(0,0,0,0)',borderColor:'rgba(158,27,47,0.4)',borderWidth:2,type:'line',pointRadius:0}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#f0ebe6'},min:0,max:8},x:{grid:{display:false}}}}});
+
+// ── SIMULATOR ──
+const audienceConfig={
+  lovers:{reach:450000,avg:7.8,label:'Coffee Lovers Premium'},
+  digital:{reach:820000,avg:6.2,label:'Digital Nomads'},
+  office:{reach:310000,avg:5.9,label:'Office Workers'},
+  genz:{reach:620000,avg:6.8,label:'Generation Z'},
+};
+function updateEngagement(){
+  const ux=parseInt(document.getElementById('ux').value);
+  const fr=parseInt(document.getElementById('freq').value);
+  const ti=parseInt(document.getElementById('time').value);
+  const target=document.getElementById('targetAudience').value;
+  document.getElementById('valUx').textContent=ux;
+  document.getElementById('valFreq').textContent=fr;
+  document.getElementById('valTime').textContent=ti;
+  const score=((ux+fr+ti)/3).toFixed(1);
+  document.getElementById('indiceVal').textContent=score;
+  const cfg=audienceConfig[target];
+  const finalReach=Math.round(cfg.reach*(score/6.5));
+  document.getElementById('reachVal').textContent=(finalReach/1000).toFixed(0)+'k';
+  document.getElementById('convPred').textContent=Math.min(95,Math.round(score*6.8))+'%';
+  document.getElementById('revenueImpact').textContent='+$'+(finalReach*parseFloat(score)*0.0012).toFixed(1)+'M';
+  if(historyChartInstance){historyChartInstance.data.datasets[0].data[4]=parseFloat(score);historyChartInstance.data.datasets[1].data=Array(5).fill(cfg.avg);historyChartInstance.update();}
+  const alertEl=document.getElementById('engagementAlert');
+  let narrative='';
+  if(score<5){alertEl.className='alert-banner mt-16';alertEl.innerHTML='⚠️ <span><strong>Índice Crítico:</strong> Vínculo bajo umbral mínimo 6.0. Riesgo alto de pérdida de audiencia. Revisar experiencia del canal.</span>';narrative=`Índice ${score}/10 — <strong>${cfg.label}</strong> muestra señales de fatiga. Se recomienda pausa de campaña activa. El análisis estadístico indicaría CV > 0.7 (Divergente): segmentar el grupo para identificar el subgrupo que aún responde positivamente.`;}
+  else if(score<7){alertEl.className='alert-banner gold mt-16';alertEl.innerHTML='⚡ <span><strong>Índice Moderado:</strong> Hay margen de mejora. Optimizar experiencia y relevancia de contenido puede incrementar +1.5 puntos.</span>';narrative=`Índice ${score}/10 — <strong>${cfg.label}</strong>. El segmento responde con potencial limitado. CV estimado: Variante (0.3-0.7). Priorizar mejora de experiencia digital y personalización del mensaje.`;}
+  else{alertEl.className='alert-banner green mt-16';alertEl.innerHTML='✅ <span><strong>Configuración Óptima:</strong> El segmento responde positivamente. Escalar inversión en este escenario maximiza el retorno.</span>';narrative=`Índice ${score}/10 — Excelente. <strong>${cfg.label}</strong> en rango homogéneo (CV < 0.3). Escalar inversión 20% y activar audiencias similares basadas en este perfil. Vínculo de fidelización activado.`;}
+  document.getElementById('simNarrative').innerHTML=narrative;
+  updateRangeStyle();
+}
+
+// ── IMPACT CHARTS ──
+function initImpactCharts(){
+  impactRoasChartInst=new Chart(document.getElementById('impactRoasChart'),{type:'line',data:{labels:['Q3 2024','Q4 2024','Q1 2025','Q2 2025','Q3 2025','Q4 2025','Q1 2026','Q2 2026'],datasets:[{label:'ROAS Real',data:[1.8,2.1,2.3,2.8,3.1,3.6,3.9,4.2],borderColor:RED,backgroundColor:'rgba(158,27,47,0.08)',fill:true,tension:0.4,pointBackgroundColor:RED,pointRadius:4},{label:'Línea base (sin plataforma)',data:[1.8,1.9,2.0,2.1,2.1,2.1,2.1,2.1],borderColor:'#d4c4ba',borderDash:[5,5],fill:false,pointRadius:0}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#f0ebe6'},min:0,max:5},x:{grid:{display:false}}}}});
+  impactFunnelChartInst=new Chart(document.getElementById('impactFunnelChart'),{type:'bar',data:{labels:['Alcance→Interés','Interés→Intención','Intención→Compra','Compra→Lealtad'],datasets:[{label:'Sin inteligencia de datos',data:[52,22,8,5],backgroundColor:'rgba(212,196,186,0.7)',borderRadius:5},{label:'Con plataforma activa',data:[64,35,20,12],backgroundColor:RED,borderRadius:5}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#f0ebe6'},max:80},x:{grid:{display:false}}}}});
+  impactProjChartInst=new Chart(document.getElementById('impactProjectionChart'),{type:'line',data:{labels:['Hoy','Mes 1','Mes 2','Mes 3','Mes 4','Mes 5','Mes 6'],datasets:[{label:'Sin intervención',data:[45.2,45.5,45.8,46.0,46.2,46.4,46.5],borderColor:'#d4c4ba',borderDash:[5,5],fill:false,tension:0.3,pointRadius:3},{label:'Con intervención App',data:[45.2,47.1,49.3,51.8,53.2,55.0,56.8],borderColor:GOLD,fill:false,tension:0.4,pointBackgroundColor:GOLD,pointRadius:4},{label:'Con todas las intervenciones',data:[45.2,48.5,52.3,56.1,59.4,62.8,66.3],borderColor:GREEN,backgroundColor:'rgba(26,122,74,0.08)',fill:true,tension:0.4,pointBackgroundColor:GREEN,pointRadius:4}]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:11}}}},scales:{y:{grid:{color:'#f0ebe6'},title:{display:true,text:'LTV Promedio ($)',color:'#9e8d82',font:{size:10}}},x:{grid:{display:false}}}}});
+}
+
+// ── RANGE STYLE ──
+function updateRangeStyle(){
+  document.querySelectorAll('input[type=range]').forEach(inp=>{
+    const val=(inp.value-inp.min)/(inp.max-inp.min)*100;
+    inp.style.background=`linear-gradient(to right,var(--red) ${val}%,var(--bg-alt) ${val}%)`;
+  });
+}
+
+// ── INIT ──
+window.addEventListener('load',()=>{
+  historyChartInstance=new Chart(document.getElementById('historyChart'),{type:'line',data:{labels:['Sem 1','Sem 2','Sem 3','Sem 4','Hoy'],datasets:[{label:'Índice Actual',data:[6,6.2,6.5,6.8,5.6],borderColor:RED,backgroundColor:'rgba(158,27,47,0.08)',fill:true,tension:0.4,pointBackgroundColor:RED,pointRadius:4},{label:'Promedio Histórico',data:[6.2,6.2,6.2,6.2,6.2],borderColor:'#b5a89e',borderDash:[5,5],fill:false,pointRadius:0}]},options:{maintainAspectRatio:false,scales:{y:{min:0,max:10,grid:{color:'#f0ebe6'}},x:{grid:{display:false}}},plugins:{legend:{labels:{font:{size:11}}}}}});
+  updatePortfolio();
+  updateEngagement();
+  renderWeeklyTable(); // Inicializar tabla con Bogotá por defecto
+});
+
+document.addEventListener('input',e=>{
+  if(e.target.type==='range'){
+    const val=(e.target.value-e.target.min)/(e.target.max-e.target.min)*100;
+    e.target.style.background=`linear-gradient(to right,var(--red) ${val}%,var(--bg-alt) ${val}%)`;
+  }
+});
+</script>
+</body>
 </html>
